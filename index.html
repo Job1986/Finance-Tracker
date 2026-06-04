@@ -10,24 +10,42 @@
 <title>Finance Tracker</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
 <style>
-:root{--bg:#f5f5f7;--card:#fff;--border:#e5e5ea;--text:#1c1c1e;--text2:#6e6e73;--inc:#1D9E75;--exp:#D85A30;--r:14px;--rs:10px}
+:root{--bg:#f5f5f7;--card:#fff;--border:#e5e5ea;--text:#1c1c1e;--text2:#6e6e73;--inc:#1D9E75;--exp:#D85A30;--sav:#534AB7;--r:14px;--rs:10px}
 @media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--border:#38383a;--text:#fff;--text2:#8e8e93}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);font-family:-apple-system,'Sarabun',sans-serif;color:var(--text)}
 input,button{font-family:inherit;font-size:14px;outline:none}
 input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text)}
 .app{max-width:430px;margin:0 auto;padding-bottom:90px}
+
+/* NAV */
 .nav{display:flex;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--card);border-top:.5px solid var(--border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .nb{flex:1;padding:10px 4px 8px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text2);font-size:10px;transition:color .15s}
 .nb i{font-size:22px}.nb.on{color:var(--inc)}
+
+/* PAGES */
 .pg{display:none;padding:16px 14px 0}.pg.on{display:block}
-.mbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-top:8px}
-.mbar button{background:var(--card);border:.5px solid var(--border);border-radius:var(--rs);padding:7px 13px;cursor:pointer;color:var(--text)}
-.mn{font-size:17px;font-weight:600}
+
+/* MONTH BAR — bigger, more prominent */
+.mbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-top:8px;gap:8px}
+.mbar-btn{background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .1s,opacity .15s;min-width:44px;min-height:44px;font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.mbar-btn:active{transform:scale(.8);opacity:.4}
+.mbar-btn i{font-size:28px;color:var(--text)}
+.mn{font-size:18px;font-weight:700;flex:1;text-align:center}
+
+/* SUMMARY CARDS */
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .mc{background:var(--card);border-radius:var(--r);padding:14px}
 .ml{font-size:12px;color:var(--text2);margin-bottom:5px}
 .mv{font-size:22px;font-weight:600}
+.mc-full{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px}
+
+/* SAVINGS TOTAL BANNER */
+.sav-banner{background:linear-gradient(135deg,#534AB7 0%,#7F77DD 100%);border-radius:var(--r);padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.sav-banner .sl{font-size:13px;color:rgba(255,255,255,.75);margin-bottom:4px}
+.sav-banner .sv{font-size:26px;font-weight:700;color:#fff}
+.sav-banner i{font-size:32px;color:rgba(255,255,255,.3)}
+
 .card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px}
 .st{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px 2px}
 .txl{display:flex;flex-direction:column;gap:7px}
@@ -37,14 +55,22 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
 .txn{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .txm{font-size:12px;color:var(--text2);margin-top:2px}
 .txa{font-size:14px;font-weight:600;flex-shrink:0}
-.txd{background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;font-size:17px}
+.tx-actions{display:flex;gap:2px;flex-shrink:0}
+.txd{background:none;border:none;cursor:pointer;color:var(--text2);padding:5px;font-size:16px;border-radius:6px}
+.txd:active{background:var(--border)}
+.txe-btn{background:none;border:none;cursor:pointer;color:var(--inc);padding:5px;font-size:16px;border-radius:6px}
+.txe-btn:active{background:var(--border)}
 .emp{text-align:center;padding:36px 16px;color:var(--text2);font-size:14px;line-height:1.8}
 .emp i{font-size:36px;display:block;margin-bottom:10px;opacity:.5}
 .pw{height:170px;position:relative}
 .cr{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border)}
 .cr:last-child{border-bottom:none}
 .cd{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+/* FAB */
 .fab{position:fixed;bottom:calc(62px + env(safe-area-inset-bottom));right:20px;width:54px;height:54px;border-radius:50%;background:var(--inc);color:#fff;border:none;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(29,158,117,.4);z-index:99;line-height:1}
+
+/* MODAL */
 .mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
 .mbg.on{display:flex}
 .modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px 18px;width:100%;max-width:430px;max-height:92vh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
@@ -55,6 +81,7 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
 .tb{padding:11px;border:1px solid var(--border);border-radius:var(--rs);background:none;cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
 .tb.ai{background:#e8f9f3;color:#0b6349;border-color:var(--inc)}
 .tb.ae{background:#fceee9;color:#8c3218;border-color:var(--exp)}
+.tb.as{background:#eeecfc;color:#3c3489;border-color:var(--sav)}
 .fg{margin-bottom:14px}.fg label{font-size:13px;color:var(--text2);display:block;margin-bottom:6px}
 .cg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .catb{padding:9px 8px;border:1px solid var(--border);border-radius:var(--rs);background:none;cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px;transition:all .15s}
@@ -67,16 +94,36 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
 .ss.ld{background:#e8f9f3;color:#0b6349;display:block}
 .ss.ok{background:#e8f9f3;color:#0b6349;display:block}
 .ss.er{background:#fceee9;color:#8c3218;display:block}
+.prog-wrap{background:#e5e5ea;border-radius:999px;height:6px;margin:6px 0 2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:999px;background:var(--inc);transition:width .3s}
 .sub{width:100%;padding:14px;background:var(--inc);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
+.sub.edit-mode{background:var(--sav)}
+
+/* HISTORY */
 .hi{padding:12px 0;border-bottom:.5px solid var(--border)}.hi:last-child{border-bottom:none}
 .ht{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
 .hm{font-size:15px;font-weight:500}.hb{font-size:14px;font-weight:600}
-.prog-wrap{background:#e5e5ea;border-radius:999px;height:6px;margin:6px 0 2px;overflow:hidden}
-.prog-fill{height:100%;border-radius:999px;background:var(--inc);transition:width .3s}
+.hist-sav{font-size:12px;color:var(--sav);font-weight:500}
+
+/* SAVINGS PAGE */
+.sav-month-card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.sav-month-card .sm-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sav-month-card .sm-title{font-size:15px;font-weight:600}
+.sav-month-card .sm-amount{font-size:15px;font-weight:600;color:var(--sav)}
+.sav-cumbar{height:6px;background:var(--border);border-radius:999px;overflow:hidden;margin-top:6px}
+.sav-cumbar-fill{height:100%;background:var(--sav);border-radius:999px;transition:width .4s}
+
+/* LOADING */
 .lov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:500;align-items:center;justify-content:center}
 .lov.on{display:flex}
 .lob{background:var(--card);border-radius:var(--r);padding:24px 32px;text-align:center;font-size:14px;color:var(--text2)}
 .lob i{font-size:32px;display:block;margin-bottom:10px;color:var(--inc)}
+
+/* CHART TABS */
+.ctabs{display:flex;gap:6px;margin-bottom:10px}
+.ctab{flex:1;padding:8px 4px;border:.5px solid var(--border);border-radius:8px;background:none;cursor:pointer;font-size:12px;color:var(--text2);font-family:inherit;transition:all .15s}
+.ctab.on{background:var(--inc);color:#fff;border-color:var(--inc)}
+.ctab.sav-tab.on{background:var(--sav);border-color:var(--sav)}
 </style>
 </head>
 <body>
@@ -86,75 +133,140 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
     <button class="nb on" onclick="showPg('dash',this)"><i class="ti ti-layout-dashboard"></i>ภาพรวม</button>
     <button class="nb" onclick="showPg('txs',this)"><i class="ti ti-list"></i>รายการ</button>
     <button class="nb" onclick="showPg('cats',this)"><i class="ti ti-chart-pie"></i>หมวดหมู่</button>
+    <button class="nb" onclick="showPg('savings',this)"><i class="ti ti-piggy-bank"></i>เงินออม</button>
     <button class="nb" onclick="showPg('hist',this)"><i class="ti ti-calendar-stats"></i>ประวัติ</button>
   </nav>
+
+  <!-- DASHBOARD -->
   <div id="pg-dash" class="pg on">
-    <div class="mbar"><button onclick="chgM(-1)"><i class="ti ti-chevron-left"></i></button><span class="mn" id="ml1"></span><button onclick="chgM(1)"><i class="ti ti-chevron-right"></i></button></div>
+    <div class="mbar">
+      <button class="mbar-btn" onclick="chgM(-1)">&#8592;</button>
+      <span class="mn" id="ml1"></span>
+      <button class="mbar-btn" onclick="chgM(1)">&#8594;</button>
+    </div>
+    <!-- savings banner -->
+    <div class="sav-banner">
+      <div><div class="sl">เงินออมสะสมทั้งหมด</div><div class="sv" id="total-savings">฿0</div></div>
+      <i class="ti ti-piggy-bank"></i>
+    </div>
     <div class="mg">
       <div class="mc"><div class="ml">รายรับ</div><div class="mv" id="ti" style="color:var(--inc)">฿0</div></div>
       <div class="mc"><div class="ml">รายจ่าย</div><div class="mv" id="te" style="color:var(--exp)">฿0</div></div>
     </div>
-    <div class="mc" style="margin-bottom:12px"><div class="ml">คงเหลือ</div><div class="mv" id="tb">฿0</div></div>
+    <div class="mc-full"><div class="ml">คงเหลือ</div><div class="mv" id="tb">฿0</div></div>
     <div class="st">6 เดือนล่าสุด</div>
-    <div class="card">
+    <!-- chart tabs -->
+    <div class="ctabs">
+      <button class="ctab on" onclick="setChartTab('bar',this)">รายรับ/จ่าย</button>
+      <button class="ctab sav-tab" onclick="setChartTab('sav',this)">เงินออมสะสม</button>
+    </div>
+    <div class="card" id="chart-bar-wrap">
       <div style="position:relative;height:180px"><canvas id="barC"></canvas></div>
       <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--text2)">
         <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#1D9E75;flex-shrink:0"></span>รายรับ</span>
         <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#D85A30;flex-shrink:0"></span>รายจ่าย</span>
       </div>
     </div>
+    <div class="card" id="chart-sav-wrap" style="display:none">
+      <div style="position:relative;height:180px"><canvas id="savC"></canvas></div>
+      <div style="margin-top:8px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px">
+        <span style="width:10px;height:10px;border-radius:3px;background:#534AB7;flex-shrink:0"></span>เงินออมสะสม (บาท)
+      </div>
+    </div>
     <div class="st">รายการล่าสุด</div>
     <div id="rl" class="txl"></div>
   </div>
+
+  <!-- TRANSACTIONS -->
   <div id="pg-txs" class="pg">
-    <div class="mbar"><button onclick="chgM(-1)"><i class="ti ti-chevron-left"></i></button><span class="mn" id="ml2"></span><button onclick="chgM(1)"><i class="ti ti-chevron-right"></i></button></div>
+    <div class="mbar">
+      <button class="mbar-btn" onclick="chgM(-1)">&#8592;</button>
+      <span class="mn" id="ml2"></span>
+      <button class="mbar-btn" onclick="chgM(1)">&#8594;</button>
+    </div>
     <div id="txl" class="txl"></div>
     <div id="txe" class="emp" style="display:none"><i class="ti ti-receipt-off"></i>ยังไม่มีรายการเดือนนี้<br>กด + เพื่อเพิ่มรายการ</div>
   </div>
+
+  <!-- CATEGORIES -->
   <div id="pg-cats" class="pg">
-    <div class="mbar"><button onclick="chgM(-1)"><i class="ti ti-chevron-left"></i></button><span class="mn" id="ml3"></span><button onclick="chgM(1)"><i class="ti ti-chevron-right"></i></button></div>
+    <div class="mbar">
+      <button class="mbar-btn" onclick="chgM(-1)">&#8592;</button>
+      <span class="mn" id="ml3"></span>
+      <button class="mbar-btn" onclick="chgM(1)">&#8594;</button>
+    </div>
     <div class="st">สัดส่วนรายจ่าย</div>
     <div class="card"><div class="pw"><canvas id="pieC"></canvas></div></div>
     <div class="card" id="catd"></div>
   </div>
+
+  <!-- SAVINGS PAGE -->
+  <div id="pg-savings" class="pg">
+    <div class="st">เงินออมสะสมทั้งหมด</div>
+    <div class="sav-banner" style="margin-bottom:16px">
+      <div><div class="sl">ยอดรวมทุกเดือน</div><div class="sv" id="total-savings2">฿0</div></div>
+      <i class="ti ti-trending-up"></i>
+    </div>
+    <div class="st">รายเดือน</div>
+    <div id="sav-list"></div>
+  </div>
+
+  <!-- HISTORY -->
   <div id="pg-hist" class="pg">
     <div class="st">ประวัติทุกเดือน</div>
     <div class="card" id="histl"></div>
   </div>
 </div>
+
 <button class="fab" onclick="openM()">+</button>
+
+<!-- MODAL ADD/EDIT -->
 <div class="mbg" id="modal">
   <div class="modal">
-    <div class="mh"><span class="mt">เพิ่มรายการ</span><button class="cb" onclick="closeM()">✕</button></div>
+    <div class="mh"><span class="mt" id="modal-title">เพิ่มรายการ</span><button class="cb" onclick="closeM()">✕</button></div>
     <div class="tr">
       <button class="tb ai" id="bi" onclick="setT('income')"><i class="ti ti-trending-up"></i> รายรับ</button>
       <button class="tb" id="be" onclick="setT('expense')"><i class="ti ti-trending-down"></i> รายจ่าย</button>
+      <button class="tb" id="bs" onclick="setT('saving')" style="grid-column:span 2"><i class="ti ti-piggy-bank"></i> ฝากเงินออม</button>
     </div>
-    <div class="sb"><input type="file" accept="image/*" id="rf" onchange="doScan(event)"><i class="ti ti-camera"></i><p>แตะเพื่ออัพโหลดใบเสร็จ / ถ่ายรูป<br><small style="opacity:.6">Tesseract OCR — ประมวลผลบนเครื่อง ปลอดภัย 100%</small></p></div>
-    <div class="ss" id="ss"></div>
-    <div id="ocrProg" style="display:none;margin-bottom:14px">
-      <div style="font-size:12px;color:var(--text2);margin-bottom:4px" id="ocrTxt">กำลังโหลด OCR...</div>
-      <div class="prog-wrap"><div class="prog-fill" id="ocrBar" style="width:0%"></div></div>
+    <!-- OCR: hide when editing -->
+    <div id="ocr-section">
+      <div class="sb"><input type="file" accept="image/*" id="rf" onchange="doScan(event)"><i class="ti ti-camera"></i><p>แตะเพื่ออัพโหลดใบเสร็จ / ถ่ายรูป<br><small style="opacity:.6">Tesseract OCR — ประมวลผลบนเครื่อง ปลอดภัย 100%</small></p></div>
+      <div class="ss" id="ss"></div>
+      <div id="ocrProg" style="display:none;margin-bottom:14px">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:4px" id="ocrTxt">กำลังโหลด OCR...</div>
+        <div class="prog-wrap"><div class="prog-fill" id="ocrBar" style="width:0%"></div></div>
+      </div>
     </div>
     <div class="fg"><label>ชื่อรายการ</label><input type="text" id="in" placeholder="เช่น ข้าวกะเพรา, 7-Eleven"></div>
     <div class="fg"><label>จำนวนเงิน (฿)</label><input type="number" id="ia" placeholder="0.00" min="0" step="0.01"></div>
     <div class="fg"><label>วันที่</label><input type="date" id="id"></div>
-    <div class="fg"><label>หมวดหมู่</label><div class="cg" id="cg"></div></div>
+    <div class="fg" id="cat-section"><label>หมวดหมู่</label><div class="cg" id="cg"></div></div>
     <div class="fg" id="cfg" style="display:none"><label>ระบุหมวดหมู่</label><input type="text" id="ic" placeholder="พิมพ์หมวดหมู่"></div>
-    <button class="sub" onclick="addTx()">บันทึกรายการ</button>
+    <button class="sub" id="submitBtn" onclick="submitTx()">บันทึกรายการ</button>
   </div>
 </div>
+
 <script>
 var SB_URL='https://ljqsgtvjyobqlrfdvpyo.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqcXNndHZqeW9icWxyZmR2cHlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTE0NjYsImV4cCI6MjA5NTcyNzQ2Nn0.mwa1nNhnH6Mh1TGDHslWYbtSVKq3yjWxBCrNeqZwrlo';
-var CE=[{id:'food',label:'อาหาร/เครื่องดื่ม',icon:'ti-bowl',color:'#1D9E75'},{id:'shop',label:'ช้อปปิ้ง',icon:'ti-shopping-bag',color:'#378ADD'},{id:'entertain',label:'บันเทิง',icon:'ti-confetti',color:'#BA7517'},{id:'other',label:'อื่นๆ',icon:'ti-dots',color:'#888780'}];
+
+var CE=[{id:'food',label:'อาหาร/เครื่องดื่ม',icon:'ti-bowl',color:'#1D9E75'},{id:'shop',label:'ช้อปปิ้ง',icon:'ti-shopping-bag',color:'#378ADD'},{id:'entertain',label:'บันเทิง',icon:'ti-confetti',color:'#BA7517'},{id:'transport',label:'เดินทาง',icon:'ti-car',color:'#D4537E'},{id:'other',label:'อื่นๆ',icon:'ti-dots',color:'#888780'}];
 var CI=[{id:'salary',label:'เงินเดือน',icon:'ti-briefcase',color:'#534AB7'},{id:'bonus',label:'โบนัส',icon:'ti-gift',color:'#D4537E'},{id:'freelance',label:'ฟรีแลนซ์',icon:'ti-device-laptop',color:'#0F6E56'},{id:'other',label:'อื่นๆ',icon:'ti-dots',color:'#888780'}];
-var curType='income',selCat='salary',curDate=new Date(),barInst=null,pieInst=null,allTxs=[];
+var CS=[{id:'save',label:'เงินออม',icon:'ti-piggy-bank',color:'#534AB7'}];
+
+var curType='income',selCat='salary',curDate=new Date(),barInst=null,pieInst=null,savInst=null,allTxs=[];
+var editingId=null;
+var curChartTab='bar';
 var MN=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
 function mk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function ml(d){return MN[d.getMonth()]+' '+(d.getFullYear()+543)}
 function fmt(n){return'฿'+Math.round(Math.abs(Number(n))).toLocaleString('th-TH')}
-function gc(type,id){var l=type==='income'?CI:CE;return l.find(function(c){return c.id===id})||{label:id,icon:'ti-circle',color:'#888780'}}
+function gc(type,id){
+  var l=type==='income'?CI:type==='saving'?CS:CE;
+  return l.find(function(c){return c.id===id})||{label:id,icon:'ti-circle',color:'#888780'};
+}
 function showLov(v){document.getElementById('lov').className='lov'+(v?' on':'')}
 
 async function sbFetch(path,method,body){
@@ -168,76 +280,260 @@ async function sbFetch(path,method,body){
 async function loadTxs(){
   showLov(true);
   try{allTxs=await sbFetch('transactions?select=*&order=date.desc')}
-  catch(e){console.error(e);allTxs=[]}
+  catch(e){console.warn('Supabase offline (sandbox/preview):',e.message);allTxs=[]}
   showLov(false);
 }
 
 function getTxsByMonth(key){return allTxs.filter(function(t){return t.date&&t.date.substring(0,7)===key}).sort(function(a,b){return new Date(b.date)-new Date(a.date)})}
 
+/* cumulative savings up to and including given month key */
+function getCumulativeSavings(upToKey){
+  return allTxs.filter(function(t){
+    return t.type==='saving'&&t.date&&t.date.substring(0,7)<=upToKey;
+  }).reduce(function(s,t){return s+Number(t.amount)},0);
+}
+function getTotalSavings(){
+  return allTxs.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0);
+}
+
 function txHTML(tx,del){
-  var cat=gc(tx.type,tx.cat);var sign=tx.type==='income'?'+':'-';
-  return '<div class="txi"><div class="txico" style="background:'+cat.color+'22"><i class="ti '+cat.icon+'" style="color:'+cat.color+'"></i></div><div class="txin"><div class="txn">'+tx.name+'</div><div class="txm">'+cat.label+' · '+tx.date+'</div></div><div class="txa" style="color:'+(tx.type==='income'?'var(--inc)':'var(--exp)')+'">'+sign+fmt(tx.amount)+'</div>'+(del?'<button class="txd" onclick="delTx(\''+tx.id+'\')"><i class="ti ti-trash"></i></button>':'')+'</div>';
+  var cat=gc(tx.type,tx.cat);
+  var sign=tx.type==='income'?'+':tx.type==='saving'?'+':'-';
+  var color=tx.type==='income'?'var(--inc)':tx.type==='saving'?'var(--sav)':'var(--exp)';
+  return '<div class="txi"><div class="txico" style="background:'+cat.color+'22"><i class="ti '+cat.icon+'" style="color:'+cat.color+'"></i></div>'
+    +'<div class="txin"><div class="txn">'+tx.name+'</div><div class="txm">'+cat.label+' · '+tx.date+'</div></div>'
+    +'<div class="txa" style="color:'+color+'">'+sign+fmt(tx.amount)+'</div>'
+    +(del?'<div class="tx-actions"><button class="txe-btn" onclick="openEdit(\''+tx.id+'\')"><i class="ti ti-edit"></span></button><button class="txd" onclick="delTx(\''+tx.id+'\')"><i class="ti ti-trash"></span></button></div>':'')
+    +'</div>';
 }
 
 function destroyChart(inst){if(inst){try{inst.destroy()}catch(e){}}return null}
+
+function setChartTab(tab,btn){
+  curChartTab=tab;
+  document.querySelectorAll('.ctab').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.getElementById('chart-bar-wrap').style.display=tab==='bar'?'block':'none';
+  document.getElementById('chart-sav-wrap').style.display=tab==='sav'?'block':'none';
+  if(tab==='sav')renderSavingsChart();
+}
+
+function renderSavingsChart(){
+  savInst=destroyChart(savInst);
+  var lblA=[],savA=[];
+  for(var i=5;i>=0;i--){
+    var d=new Date(curDate.getFullYear(),curDate.getMonth()-i,1);
+    var key=mk(d);
+    savA.push(getCumulativeSavings(key));
+    lblA.push(MN[d.getMonth()]);
+  }
+  var sc=document.getElementById('savC');
+  if(sc&&window.Chart){
+    savInst=new Chart(sc,{type:'line',data:{labels:lblA,datasets:[{label:'เงินออมสะสม',data:savA,borderColor:'#534AB7',backgroundColor:'rgba(83,74,183,.1)',tension:.35,fill:true,pointBackgroundColor:'#534AB7',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{callback:function(v){return'฿'+v.toLocaleString()}}}}}});
+  }
+}
 
 function refresh(){
   var key=mk(curDate);var txs=getTxsByMonth(key);
   var inc=txs.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0);
   var exp=txs.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0);
-  var bal=inc-exp;
+  var sav=txs.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0);
+  var bal=inc-exp-sav;
+  var totalSav=getTotalSavings();
+
   ['ml1','ml2','ml3'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=ml(curDate)});
   document.getElementById('ti').textContent=fmt(inc);
   document.getElementById('te').textContent=fmt(exp);
   var tb=document.getElementById('tb');tb.textContent=(bal<0?'-':'')+fmt(bal);tb.style.color=bal>=0?'var(--inc)':'var(--exp)';
+
+  // savings banners
+  ['total-savings','total-savings2'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.textContent=fmt(totalSav);
+  });
+
   document.getElementById('rl').innerHTML=txs.length?txs.slice(0,5).map(function(t){return txHTML(t,false)}).join(''):'<div class="emp"><i class="ti ti-clock"></i>ยังไม่มีรายการ</div>';
   var txl=document.getElementById('txl');var txe=document.getElementById('txe');
   if(txs.length){txl.innerHTML=txs.map(function(t){return txHTML(t,true)}).join('');txe.style.display='none'}
   else{txl.innerHTML='';txe.style.display='block'}
+
+  // bar chart
   barInst=destroyChart(barInst);
   var incA=[],expA=[],lblA=[];
   for(var i=5;i>=0;i--){var d=new Date(curDate.getFullYear(),curDate.getMonth()-i,1);var mt=getTxsByMonth(mk(d));incA.push(mt.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0));expA.push(mt.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0));lblA.push(MN[d.getMonth()])}
   var bc=document.getElementById('barC');
   if(bc&&window.Chart){barInst=new Chart(bc,{type:'bar',data:{labels:lblA,datasets:[{label:'รายรับ',data:incA,backgroundColor:'#1D9E75',borderRadius:4},{label:'รายจ่าย',data:expA,backgroundColor:'#D85A30',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{callback:function(v){return'฿'+v.toLocaleString()}}}}}})}
+
+  if(curChartTab==='sav')renderSavingsChart();
+
+  // pie chart
   pieInst=destroyChart(pieInst);
   var expTxs=txs.filter(function(t){return t.type==='expense'});var cm={};
   expTxs.forEach(function(t){cm[t.cat]=(cm[t.cat]||0)+Number(t.amount)});var ck=Object.keys(cm);
   var pc=document.getElementById('pieC');
-  if(pc&&ck.length&&window.Chart){pieInst=new Chart(pc,{type:'doughnut',data:{labels:ck.map(function(k){return gc('expense',k).label}),datasets:[{data:ck.map(function(k){return cm[k]}),backgroundColor:ck.map(function(k){return gc('expense',k).color}),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});var total=ck.reduce(function(s,k){return s+cm[k]},0);document.getElementById('catd').innerHTML=ck.sort(function(a,b){return cm[b]-cm[a]}).map(function(k){var cat=gc('expense',k);var pct=total?Math.round(cm[k]/total*100):0;return'<div class="cr"><span class="cd" style="background:'+cat.color+'"></span><span style="flex:1;font-size:14px">'+cat.label+'</span><span style="font-size:13px;color:var(--text2);margin-right:8px">'+pct+'%</span><span style="font-size:14px;font-weight:500">'+fmt(cm[k])+'</span></div>'}).join('')}
-  else if(pc){document.getElementById('catd').innerHTML='<div class="emp"><i class="ti ti-chart-pie-off"></i>ยังไม่มีรายจ่ายเดือนนี้</div>'}
+  if(pc&&ck.length&&window.Chart){
+    pieInst=new Chart(pc,{type:'doughnut',data:{labels:ck.map(function(k){return gc('expense',k).label}),datasets:[{data:ck.map(function(k){return cm[k]}),backgroundColor:ck.map(function(k){return gc('expense',k).color}),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});
+    var total=ck.reduce(function(s,k){return s+cm[k]},0);
+    document.getElementById('catd').innerHTML=ck.sort(function(a,b){return cm[b]-cm[a]}).map(function(k){var cat=gc('expense',k);var pct=total?Math.round(cm[k]/total*100):0;return'<div class="cr"><span class="cd" style="background:'+cat.color+'"></span><span style="flex:1;font-size:14px">'+cat.label+'</span><span style="font-size:13px;color:var(--text2);margin-right:8px">'+pct+'%</span><span style="font-size:14px;font-weight:500">'+fmt(cm[k])+'</span></div>'}).join('');
+  } else if(pc){document.getElementById('catd').innerHTML='<div class="emp"><i class="ti ti-chart-pie-off"></i>ยังไม่มีรายจ่ายเดือนนี้</div>'}
+
+  // savings page
+  renderSavingsPage();
+
+  // history
   var months={};allTxs.forEach(function(t){var k=t.date.substring(0,7);if(!months[k])months[k]=[];months[k].push(t)});
   var allK=Object.keys(months).sort().reverse();var hl=document.getElementById('histl');
   if(!allK.length){hl.innerHTML='<div class="emp"><i class="ti ti-history"></i>ยังไม่มีข้อมูล</div>';return}
-  hl.innerHTML=allK.map(function(k){var mt=months[k];var i2=mt.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0);var e2=mt.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0);var b2=i2-e2;var p=k.split('-');var d2=new Date(p[0],parseInt(p[1])-1,1);return'<div class="hi"><div class="ht"><span class="hm">'+ml(d2)+'</span><span class="hb" style="color:'+(b2>=0?'var(--inc)':'var(--exp)')+'">'+( b2>=0?'+':'-')+fmt(b2)+'</span></div><div style="display:flex;gap:14px;font-size:12px;color:var(--text2)"><span style="color:var(--inc)">รับ '+fmt(i2)+'</span><span style="color:var(--exp)">จ่าย '+fmt(e2)+'</span><span>'+mt.length+' รายการ</span></div></div>'}).join('');
+  hl.innerHTML=allK.map(function(k){
+    var mt=months[k];
+    var i2=mt.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0);
+    var e2=mt.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0);
+    var s2=mt.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0);
+    var b2=i2-e2-s2;
+    var cumSav=getCumulativeSavings(k);
+    var p=k.split('-');var d2=new Date(p[0],parseInt(p[1])-1,1);
+    return'<div class="hi"><div class="ht"><span class="hm">'+ml(d2)+'</span><span class="hb" style="color:'+(b2>=0?'var(--inc)':'var(--exp)')+'">'+( b2>=0?'+':'-')+fmt(b2)+'</span></div><div style="display:flex;gap:10px;font-size:12px;color:var(--text2);flex-wrap:wrap"><span style="color:var(--inc)">รับ '+fmt(i2)+'</span><span style="color:var(--exp)">จ่าย '+fmt(e2)+'</span>'+(s2>0?'<span style="color:var(--sav)">ออม '+fmt(s2)+'</span>':'')+'<span>'+mt.length+' รายการ</span></div>'+(cumSav>0?'<div style="font-size:12px;color:var(--sav);margin-top:4px">ออมสะสม: '+fmt(cumSav)+'</div>':'')+'</div>';
+  }).join('');
+}
+
+function renderSavingsPage(){
+  var totalSav=getTotalSavings();
+  // group savings by month
+  var savByMonth={};
+  allTxs.filter(function(t){return t.type==='saving'}).forEach(function(t){
+    var k=t.date.substring(0,7);
+    if(!savByMonth[k])savByMonth[k]=0;
+    savByMonth[k]+=Number(t.amount);
+  });
+  var keys=Object.keys(savByMonth).sort().reverse();
+  var maxSav=keys.length?Math.max.apply(null,keys.map(function(k){return savByMonth[k]})):1;
+  var sl=document.getElementById('sav-list');
+  if(!keys.length){sl.innerHTML='<div class="emp"><i class="ti ti-piggy-bank"></i>ยังไม่มีรายการเงินออม<br>กด + แล้วเลือก "ฝากเงินออม"</div>';return}
+  var running=0;
+  var allKeys=keys.slice().reverse(); // asc for cumulative
+  var cumMap={};
+  var cum=0;
+  allKeys.forEach(function(k){cum+=savByMonth[k];cumMap[k]=cum;});
+  sl.innerHTML=keys.map(function(k){
+    var p=k.split('-');var d=new Date(p[0],parseInt(p[1])-1,1);
+    var pct=Math.round(savByMonth[k]/maxSav*100);
+    var cumPct=totalSav?Math.round(cumMap[k]/totalSav*100):0;
+    return'<div class="sav-month-card"><div class="sm-header"><span class="sm-title">'+ml(d)+'</span><span class="sm-amount">+'+fmt(savByMonth[k])+'</span></div>'
+      +'<div style="font-size:12px;color:var(--text2)">สะสม: <span style="color:var(--sav);font-weight:600">'+fmt(cumMap[k])+'</span></div>'
+      +'<div class="sav-cumbar"><div class="sav-cumbar-fill" style="width:'+cumPct+'%"></div></div></div>';
+  }).join('');
 }
 
 function showPg(id,btn){document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on')});document.getElementById('pg-'+id).classList.add('on');document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');refresh()}
 function chgM(d){curDate=new Date(curDate.getFullYear(),curDate.getMonth()+d,1);refresh()}
-function openM(){document.getElementById('modal').classList.add('on');document.getElementById('id').value=new Date().toISOString().split('T')[0];document.getElementById('in').value='';document.getElementById('ia').value='';document.getElementById('ss').className='ss';document.getElementById('ss').textContent='';document.getElementById('rf').value='';document.getElementById('ocrProg').style.display='none';setT('income')}
-function closeM(){document.getElementById('modal').classList.remove('on')}
-function setT(t){curType=t;document.getElementById('bi').className='tb'+(t==='income'?' ai':'');document.getElementById('be').className='tb'+(t==='expense'?' ae':'');renderCats()}
-function renderCats(){var cats=curType==='income'?CI:CE;selCat=cats[0].id;document.getElementById('cg').innerHTML=cats.map(function(c){return'<button class="catb'+(c.id===selCat?' on':'')+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>'}).join('');document.getElementById('cfg').style.display='none'}
-function selC(id,el){selCat=id;document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('cfg').style.display=id==='other'?'block':'none'}
 
-async function addTx(){
-  var name=document.getElementById('in').value.trim();var amount=parseFloat(document.getElementById('ia').value);var date=document.getElementById('id').value;var cat=selCat;
+function openM(){
+  editingId=null;
+  document.getElementById('modal-title').textContent='เพิ่มรายการ';
+  document.getElementById('submitBtn').textContent='บันทึกรายการ';
+  document.getElementById('submitBtn').className='sub';
+  document.getElementById('ocr-section').style.display='block';
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('id').value=new Date().toISOString().split('T')[0];
+  document.getElementById('in').value='';document.getElementById('ia').value='';
+  document.getElementById('ss').className='ss';document.getElementById('ss').textContent='';
+  document.getElementById('rf').value='';document.getElementById('ocrProg').style.display='none';
+  setT('income');
+}
+
+function openEdit(id){
+  var tx=allTxs.find(function(t){return t.id===id});
+  if(!tx)return;
+  editingId=id;
+  document.getElementById('modal-title').textContent='แก้ไขรายการ';
+  document.getElementById('submitBtn').textContent='บันทึกการแก้ไข';
+  document.getElementById('submitBtn').className='sub edit-mode';
+  document.getElementById('ocr-section').style.display='none';
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('in').value=tx.name;
+  document.getElementById('ia').value=tx.amount;
+  document.getElementById('id').value=tx.date;
+  setT(tx.type);
+  // select correct cat
+  selCat=tx.cat;
+  document.querySelectorAll('.catb').forEach(function(b){
+    b.classList.toggle('on',b.getAttribute('data-catid')===tx.cat);
+  });
+  if(tx.cat==='other'||(!['food','shop','entertain','transport','salary','bonus','freelance','save'].includes(tx.cat))){
+    document.getElementById('cfg').style.display='block';
+    document.getElementById('ic').value=tx.cat;
+  }
+}
+
+function closeM(){document.getElementById('modal').classList.remove('on');editingId=null;}
+
+function setT(t){
+  curType=t;
+  document.getElementById('bi').className='tb'+(t==='income'?' ai':'');
+  document.getElementById('be').className='tb'+(t==='expense'?' ae':'');
+  document.getElementById('bs').className='tb'+(t==='saving'?' as':'');
+  renderCats();
+  // hide cat section for saving (only one cat)
+  document.getElementById('cat-section').style.display=t==='saving'?'none':'block';
+  if(t==='saving')selCat='save';
+}
+
+function renderCats(){
+  if(curType==='saving'){document.getElementById('cg').innerHTML='';return;}
+  var cats=curType==='income'?CI:CE;
+  selCat=cats[0].id;
+  document.getElementById('cg').innerHTML=cats.map(function(c){
+    return'<button class="catb'+(c.id===selCat?' on':'')+'" data-catid="'+c.id+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>';
+  }).join('');
+  document.getElementById('cfg').style.display='none';
+}
+
+function selC(id,el){
+  selCat=id;
+  document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});
+  el.classList.add('on');
+  document.getElementById('cfg').style.display=id==='other'?'block':'none';
+}
+
+async function submitTx(){
+  var name=document.getElementById('in').value.trim();
+  var amount=parseFloat(document.getElementById('ia').value);
+  var date=document.getElementById('id').value;
+  var cat=curType==='saving'?'save':selCat;
   if(cat==='other'){var cc=document.getElementById('ic').value.trim();if(cc)cat=cc}
   if(!name||!amount||!date||amount<=0){alert('กรุณากรอกข้อมูลให้ครบ');return}
-  var tx={id:Date.now().toString(),type:curType,name:name,amount:amount,date:date,cat:cat};
+
   showLov(true);
-  try{await sbFetch('transactions','POST',tx);allTxs.unshift(tx);closeM();curDate=new Date(date.replace(/-/g,'/'));curDate=new Date(curDate.getFullYear(),curDate.getMonth(),1);refresh()}
-  catch(e){alert('บันทึกไม่สำเร็จ: '+e.message)}
+  try{
+    if(editingId){
+      // PATCH (update)
+      await sbFetch('transactions?id=eq.'+editingId,'PATCH',{name:name,amount:amount,date:date,type:curType,cat:cat});
+      var idx=allTxs.findIndex(function(t){return t.id===editingId});
+      if(idx>=0)allTxs[idx]=Object.assign(allTxs[idx],{name:name,amount:amount,date:date,type:curType,cat:cat});
+    } else {
+      var tx={id:Date.now().toString(),type:curType,name:name,amount:amount,date:date,cat:cat};
+      await sbFetch('transactions','POST',tx);
+      allTxs.unshift(tx);
+    }
+    closeM();
+    curDate=new Date(date.replace(/-/g,'/'));
+    curDate=new Date(curDate.getFullYear(),curDate.getMonth(),1);
+    refresh();
+  }catch(e){alert('บันทึกไม่สำเร็จ: '+e.message)}
   showLov(false);
 }
 
 async function delTx(id){
   if(!confirm('ลบรายการนี้?'))return;
   showLov(true);
-  try{await sbFetch('transactions?id=eq.'+id,'DELETE');allTxs=allTxs.filter(function(t){return t.id!==id});refresh()}
-  catch(e){alert('ลบไม่สำเร็จ: '+e.message)}
+  try{
+    await sbFetch('transactions?id=eq.'+id,'DELETE');
+    allTxs=allTxs.filter(function(t){return t.id!==id});
+    refresh();
+  }catch(e){alert('ลบไม่สำเร็จ: '+e.message)}
   showLov(false);
 }
 
+// OCR
 function extractAmount(text){var patterns=[/(?:total|รวม|ยอดรวม|สุทธิ|grand\s*total)[^\d]*(\d[\d,]*\.?\d*)/gi,/(\d[\d,]*\.\d{2})/gi,/(?:฿|thb)\s*(\d[\d,]*\.?\d*)/gi];var found=[];for(var i=0;i<patterns.length;i++){var m;var re=patterns[i];re.lastIndex=0;while((m=re.exec(text))!==null){var n=parseFloat(m[1].replace(/,/g,''));if(n>0&&n<1000000)found.push(n)}if(i===0&&found.length>0)break}if(!found.length)return null;return found.sort(function(a,b){return b-a})[0]}
 function extractName(text){var lines=text.split('\n').map(function(l){return l.trim()}).filter(function(l){return l.length>2});for(var i=0;i<Math.min(5,lines.length);i++){if(!/^[\d\s\.,\-\/\*]+$/.test(lines[i])&&lines[i].length>2)return lines[i].substring(0,40)}return lines[0]?lines[0].substring(0,40):''}
 
