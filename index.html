@@ -15,37 +15,46 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);font-family:-apple-system,'Sarabun',sans-serif;color:var(--text)}
 input,button{font-family:inherit;font-size:14px;outline:none}
-input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text)}
-.app{max-width:430px;margin:0 auto;padding-bottom:90px}
+input[type=text],input[type=number],input[type=date],input[type=email],input[type=password]{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text)}
 
-/* NAV */
+/* ============ LOGIN PAGE ============ */
+#login-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;max-width:430px;margin:0 auto}
+#login-page.hide{display:none}
+#pig-canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer}
+.pig-status{font-size:13px;color:var(--text2);margin:10px 0 20px;min-height:20px;text-align:center}
+.login-card{background:var(--card);border-radius:var(--r);padding:24px 20px;width:100%}
+.login-title{font-size:20px;font-weight:700;text-align:center;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px}
+.fg{margin-bottom:14px}
+.fg label{font-size:13px;color:var(--text2);display:block;margin-bottom:6px}
+.login-btn{width:100%;padding:14px;background:var(--inc);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;margin-top:4px;transition:opacity .15s}
+.login-btn:active{opacity:.8}
+.login-btn:disabled{opacity:.5;cursor:not-allowed}
+.login-err{font-size:13px;color:var(--exp);text-align:center;margin-top:10px;min-height:18px}
+.login-toggle{font-size:13px;color:var(--text2);text-align:center;margin-top:14px}
+.login-toggle span{color:var(--inc);cursor:pointer;font-weight:500}
+
+/* ============ APP ============ */
+.app{max-width:430px;margin:0 auto;padding-bottom:90px;display:none}
+.app.show{display:block}
 .nav{display:flex;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--card);border-top:.5px solid var(--border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .nb{flex:1;padding:10px 4px 8px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text2);font-size:10px;transition:color .15s}
 .nb i{font-size:22px}.nb.on{color:var(--inc)}
-
-/* PAGES */
 .pg{display:none;padding:16px 14px 0}.pg.on{display:block}
-
-/* MONTH BAR — bigger, more prominent */
 .mbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-top:8px;gap:8px}
 .mbar-btn{background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .1s,opacity .15s;min-width:44px;min-height:44px;font-size:26px;font-weight:700;color:var(--text);line-height:1}
 .mbar-btn:active{transform:scale(.8);opacity:.4}
 .mbar-btn i{font-size:28px;color:var(--text)}
 .mn{font-size:18px;font-weight:700;flex:1;text-align:center}
-
-/* SUMMARY CARDS */
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .mc{background:var(--card);border-radius:var(--r);padding:14px}
 .ml{font-size:12px;color:var(--text2);margin-bottom:5px}
 .mv{font-size:22px;font-weight:600}
 .mc-full{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px}
-
-/* SAVINGS TOTAL BANNER */
 .sav-banner{background:linear-gradient(135deg,#534AB7 0%,#7F77DD 100%);border-radius:var(--r);padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .sav-banner .sl{font-size:13px;color:rgba(255,255,255,.75);margin-bottom:4px}
 .sav-banner .sv{font-size:26px;font-weight:700;color:#fff}
 .sav-banner i{font-size:32px;color:rgba(255,255,255,.3)}
-
 .card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px}
 .st{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px 2px}
 .txl{display:flex;flex-direction:column;gap:7px}
@@ -57,20 +66,14 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
 .txa{font-size:14px;font-weight:600;flex-shrink:0}
 .tx-actions{display:flex;gap:2px;flex-shrink:0}
 .txd{background:none;border:none;cursor:pointer;color:var(--text2);padding:5px;font-size:16px;border-radius:6px}
-.txd:active{background:var(--border)}
 .txe-btn{background:none;border:none;cursor:pointer;color:var(--inc);padding:5px;font-size:16px;border-radius:6px}
-.txe-btn:active{background:var(--border)}
 .emp{text-align:center;padding:36px 16px;color:var(--text2);font-size:14px;line-height:1.8}
 .emp i{font-size:36px;display:block;margin-bottom:10px;opacity:.5}
 .pw{height:170px;position:relative}
 .cr{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border)}
 .cr:last-child{border-bottom:none}
 .cd{width:12px;height:12px;border-radius:3px;flex-shrink:0}
-
-/* FAB */
 .fab{position:fixed;bottom:calc(62px + env(safe-area-inset-bottom));right:20px;width:54px;height:54px;border-radius:50%;background:var(--inc);color:#fff;border:none;font-size:32px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(29,158,117,.4);z-index:99;line-height:1}
-
-/* MODAL */
 .mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
 .mbg.on{display:flex}
 .modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px 18px;width:100%;max-width:430px;max-height:92vh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
@@ -82,7 +85,7 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
 .tb.ai{background:#e8f9f3;color:#0b6349;border-color:var(--inc)}
 .tb.ae{background:#fceee9;color:#8c3218;border-color:var(--exp)}
 .tb.as{background:#eeecfc;color:#3c3489;border-color:var(--sav)}
-.fg{margin-bottom:14px}.fg label{font-size:13px;color:var(--text2);display:block;margin-bottom:6px}
+.fg2{margin-bottom:14px}.fg2 label{font-size:13px;color:var(--text2);display:block;margin-bottom:6px}
 .cg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .catb{padding:9px 8px;border:1px solid var(--border);border-radius:var(--rs);background:none;cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px;transition:all .15s}
 .catb.on{background:var(--bg);border-color:var(--text);color:var(--text);font-weight:500}
@@ -91,44 +94,63 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
 .sb i{font-size:30px;color:var(--text2);display:block;margin-bottom:6px}
 .sb p{font-size:13px;color:var(--text2);line-height:1.5}
 .ss{font-size:13px;padding:10px 12px;border-radius:var(--rs);margin-bottom:12px;display:none}
-.ss.ld{background:#e8f9f3;color:#0b6349;display:block}
 .ss.ok{background:#e8f9f3;color:#0b6349;display:block}
 .ss.er{background:#fceee9;color:#8c3218;display:block}
 .prog-wrap{background:#e5e5ea;border-radius:999px;height:6px;margin:6px 0 2px;overflow:hidden}
 .prog-fill{height:100%;border-radius:999px;background:var(--inc);transition:width .3s}
 .sub{width:100%;padding:14px;background:var(--inc);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
 .sub.edit-mode{background:var(--sav)}
-
-/* HISTORY */
 .hi{padding:12px 0;border-bottom:.5px solid var(--border)}.hi:last-child{border-bottom:none}
 .ht{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
 .hm{font-size:15px;font-weight:500}.hb{font-size:14px;font-weight:600}
-.hist-sav{font-size:12px;color:var(--sav);font-weight:500}
-
-/* SAVINGS PAGE */
 .sav-month-card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:10px}
 .sav-month-card .sm-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .sav-month-card .sm-title{font-size:15px;font-weight:600}
 .sav-month-card .sm-amount{font-size:15px;font-weight:600;color:var(--sav)}
 .sav-cumbar{height:6px;background:var(--border);border-radius:999px;overflow:hidden;margin-top:6px}
 .sav-cumbar-fill{height:100%;background:var(--sav);border-radius:999px;transition:width .4s}
-
-/* LOADING */
-.lov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:500;align-items:center;justify-content:center}
-.lov.on{display:flex}
-.lob{background:var(--card);border-radius:var(--r);padding:24px 32px;text-align:center;font-size:14px;color:var(--text2)}
-.lob i{font-size:32px;display:block;margin-bottom:10px;color:var(--inc)}
-
-/* CHART TABS */
 .ctabs{display:flex;gap:6px;margin-bottom:10px}
 .ctab{flex:1;padding:8px 4px;border:.5px solid var(--border);border-radius:8px;background:none;cursor:pointer;font-size:12px;color:var(--text2);font-family:inherit;transition:all .15s}
 .ctab.on{background:var(--inc);color:#fff;border-color:var(--inc)}
 .ctab.sav-tab.on{background:var(--sav);border-color:var(--sav)}
+/* user bar */
+.user-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 0}
+.user-email{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+.logout-btn{background:none;border:.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap}
+.lov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:500;align-items:center;justify-content:center}
+.lov.on{display:flex}
+.lob{background:var(--card);border-radius:var(--r);padding:24px 32px;text-align:center;font-size:14px;color:var(--text2)}
+.lob i{font-size:32px;display:block;margin-bottom:10px;color:var(--inc)}
 </style>
 </head>
 <body>
 <div class="lov" id="lov"><div class="lob"><i class="ti ti-loader"></i>กำลังโหลดข้อมูล...</div></div>
-<div class="app">
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="login-page">
+  <canvas id="pig-canvas" width="200" height="200"></canvas>
+  <div class="pig-status" id="pig-status">สวัสดี! เข้าสู่ระบบเพื่อดูเงินออม 🐷</div>
+  <div class="login-card">
+    <div class="login-title">Finance Tracker</div>
+    <div class="login-sub" id="login-sub">ยินดีต้อนรับกลับมา</div>
+    <div class="fg"><label>อีเมล</label><input type="email" id="auth-email" placeholder="you@email.com" autocomplete="username"></div>
+    <div class="fg"><label>รหัสผ่าน</label><input type="password" id="auth-pw" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="fg" id="auth-pw2-wrap" style="display:none"><label>ยืนยันรหัสผ่าน</label><input type="password" id="auth-pw2" placeholder="••••••••"></div>
+    <button class="login-btn" id="auth-btn" onclick="doAuth()">เข้าสู่ระบบ</button>
+    <div class="login-err" id="auth-err"></div>
+    <div class="login-toggle">
+      <span id="auth-toggle-txt">ยังไม่มีบัญชี? </span>
+      <span onclick="toggleAuthMode()">สมัครสมาชิก</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div class="app" id="app">
+  <div class="user-bar">
+    <span class="user-email" id="user-email-txt"></span>
+    <button class="logout-btn" onclick="doLogout()">ออกจากระบบ</button>
+  </div>
   <nav class="nav">
     <button class="nb on" onclick="showPg('dash',this)"><i class="ti ti-layout-dashboard"></i>ภาพรวม</button>
     <button class="nb" onclick="showPg('txs',this)"><i class="ti ti-list"></i>รายการ</button>
@@ -136,91 +158,50 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
     <button class="nb" onclick="showPg('savings',this)"><i class="ti ti-piggy-bank"></i>เงินออม</button>
     <button class="nb" onclick="showPg('hist',this)"><i class="ti ti-calendar-stats"></i>ประวัติ</button>
   </nav>
-
-  <!-- DASHBOARD -->
   <div id="pg-dash" class="pg on">
-    <div class="mbar">
-      <button class="mbar-btn" onclick="chgM(-1)">&#8592;</button>
-      <span class="mn" id="ml1"></span>
-      <button class="mbar-btn" onclick="chgM(1)">&#8594;</button>
-    </div>
-    <!-- savings banner -->
-    <div class="sav-banner">
-      <div><div class="sl">เงินออมสะสมทั้งหมด</div><div class="sv" id="total-savings">฿0</div></div>
-      <i class="ti ti-piggy-bank"></i>
-    </div>
+    <div class="mbar"><button class="mbar-btn" onclick="chgM(-1)">&#8592;</button><span class="mn" id="ml1"></span><button class="mbar-btn" onclick="chgM(1)">&#8594;</button></div>
+    <div class="sav-banner"><div><div class="sl">เงินออมสะสมทั้งหมด</div><div class="sv" id="total-savings">฿0</div></div><i class="ti ti-piggy-bank"></i></div>
     <div class="mg">
       <div class="mc"><div class="ml">รายรับ</div><div class="mv" id="ti" style="color:var(--inc)">฿0</div></div>
       <div class="mc"><div class="ml">รายจ่าย</div><div class="mv" id="te" style="color:var(--exp)">฿0</div></div>
     </div>
     <div class="mc-full"><div class="ml">คงเหลือ</div><div class="mv" id="tb">฿0</div></div>
     <div class="st">6 เดือนล่าสุด</div>
-    <!-- chart tabs -->
     <div class="ctabs">
       <button class="ctab on" onclick="setChartTab('bar',this)">รายรับ/จ่าย</button>
       <button class="ctab sav-tab" onclick="setChartTab('sav',this)">เงินออมสะสม</button>
     </div>
-    <div class="card" id="chart-bar-wrap">
-      <div style="position:relative;height:180px"><canvas id="barC"></canvas></div>
-      <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--text2)">
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#1D9E75;flex-shrink:0"></span>รายรับ</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#D85A30;flex-shrink:0"></span>รายจ่าย</span>
-      </div>
-    </div>
-    <div class="card" id="chart-sav-wrap" style="display:none">
-      <div style="position:relative;height:180px"><canvas id="savC"></canvas></div>
-      <div style="margin-top:8px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px">
-        <span style="width:10px;height:10px;border-radius:3px;background:#534AB7;flex-shrink:0"></span>เงินออมสะสม (บาท)
-      </div>
-    </div>
+    <div class="card" id="chart-bar-wrap"><div style="position:relative;height:180px"><canvas id="barC"></canvas></div><div style="display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--text2)"><span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#1D9E75;flex-shrink:0"></span>รายรับ</span><span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#D85A30;flex-shrink:0"></span>รายจ่าย</span></div></div>
+    <div class="card" id="chart-sav-wrap" style="display:none"><div style="position:relative;height:180px"><canvas id="savC"></canvas></div><div style="margin-top:8px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#534AB7;flex-shrink:0"></span>เงินออมสะสม (บาท)</div></div>
     <div class="st">รายการล่าสุด</div>
     <div id="rl" class="txl"></div>
   </div>
-
-  <!-- TRANSACTIONS -->
   <div id="pg-txs" class="pg">
-    <div class="mbar">
-      <button class="mbar-btn" onclick="chgM(-1)">&#8592;</button>
-      <span class="mn" id="ml2"></span>
-      <button class="mbar-btn" onclick="chgM(1)">&#8594;</button>
-    </div>
+    <div class="mbar"><button class="mbar-btn" onclick="chgM(-1)">&#8592;</button><span class="mn" id="ml2"></span><button class="mbar-btn" onclick="chgM(1)">&#8594;</button></div>
     <div id="txl" class="txl"></div>
     <div id="txe" class="emp" style="display:none"><i class="ti ti-receipt-off"></i>ยังไม่มีรายการเดือนนี้<br>กด + เพื่อเพิ่มรายการ</div>
   </div>
-
-  <!-- CATEGORIES -->
   <div id="pg-cats" class="pg">
-    <div class="mbar">
-      <button class="mbar-btn" onclick="chgM(-1)">&#8592;</button>
-      <span class="mn" id="ml3"></span>
-      <button class="mbar-btn" onclick="chgM(1)">&#8594;</button>
-    </div>
+    <div class="mbar"><button class="mbar-btn" onclick="chgM(-1)">&#8592;</button><span class="mn" id="ml3"></span><button class="mbar-btn" onclick="chgM(1)">&#8594;</button></div>
     <div class="st">สัดส่วนรายจ่าย</div>
     <div class="card"><div class="pw"><canvas id="pieC"></canvas></div></div>
     <div class="card" id="catd"></div>
   </div>
-
-  <!-- SAVINGS PAGE -->
   <div id="pg-savings" class="pg">
     <div class="st">เงินออมสะสมทั้งหมด</div>
-    <div class="sav-banner" style="margin-bottom:16px">
-      <div><div class="sl">ยอดรวมทุกเดือน</div><div class="sv" id="total-savings2">฿0</div></div>
-      <i class="ti ti-trending-up"></i>
-    </div>
+    <div class="sav-banner" style="margin-bottom:16px"><div><div class="sl">ยอดรวมทุกเดือน</div><div class="sv" id="total-savings2">฿0</div></div><i class="ti ti-trending-up"></i></div>
     <div class="st">รายเดือน</div>
     <div id="sav-list"></div>
   </div>
-
-  <!-- HISTORY -->
   <div id="pg-hist" class="pg">
     <div class="st">ประวัติทุกเดือน</div>
     <div class="card" id="histl"></div>
   </div>
 </div>
 
-<button class="fab" onclick="openM()">+</button>
+<button class="fab" onclick="openM()" id="fab" style="display:none">+</button>
 
-<!-- MODAL ADD/EDIT -->
+<!-- MODAL -->
 <div class="mbg" id="modal">
   <div class="modal">
     <div class="mh"><span class="mt" id="modal-title">เพิ่มรายการ</span><button class="cb" onclick="closeM()">✕</button></div>
@@ -229,7 +210,6 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
       <button class="tb" id="be" onclick="setT('expense')"><i class="ti ti-trending-down"></i> รายจ่าย</button>
       <button class="tb" id="bs" onclick="setT('saving')" style="grid-column:span 2"><i class="ti ti-piggy-bank"></i> ฝากเงินออม</button>
     </div>
-    <!-- OCR: hide when editing -->
     <div id="ocr-section">
       <div class="sb"><input type="file" accept="image/*" id="rf" onchange="doScan(event)"><i class="ti ti-camera"></i><p>แตะเพื่ออัพโหลดใบเสร็จ / ถ่ายรูป<br><small style="opacity:.6">Tesseract OCR — ประมวลผลบนเครื่อง ปลอดภัย 100%</small></p></div>
       <div class="ss" id="ss"></div>
@@ -238,11 +218,11 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
         <div class="prog-wrap"><div class="prog-fill" id="ocrBar" style="width:0%"></div></div>
       </div>
     </div>
-    <div class="fg"><label>ชื่อรายการ</label><input type="text" id="in" placeholder="เช่น ข้าวกะเพรา, 7-Eleven"></div>
-    <div class="fg"><label>จำนวนเงิน (฿)</label><input type="number" id="ia" placeholder="0.00" min="0" step="0.01"></div>
-    <div class="fg"><label>วันที่</label><input type="date" id="id"></div>
-    <div class="fg" id="cat-section"><label>หมวดหมู่</label><div class="cg" id="cg"></div></div>
-    <div class="fg" id="cfg" style="display:none"><label>ระบุหมวดหมู่</label><input type="text" id="ic" placeholder="พิมพ์หมวดหมู่"></div>
+    <div class="fg2"><label>ชื่อรายการ</label><input type="text" id="in" placeholder="เช่น ข้าวกะเพรา, 7-Eleven"></div>
+    <div class="fg2"><label>จำนวนเงิน (฿)</label><input type="number" id="ia" placeholder="0.00" min="0" step="0.01"></div>
+    <div class="fg2"><label>วันที่</label><input type="date" id="id"></div>
+    <div class="fg2" id="cat-section"><label>หมวดหมู่</label><div class="cg" id="cg"></div></div>
+    <div class="fg2" id="cfg" style="display:none"><label>ระบุหมวดหมู่</label><input type="text" id="ic" placeholder="พิมพ์หมวดหมู่"></div>
     <button class="sub" id="submitBtn" onclick="submitTx()">บันทึกรายการ</button>
   </div>
 </div>
@@ -250,314 +230,267 @@ input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13p
 <script>
 var SB_URL='https://ljqsgtvjyobqlrfdvpyo.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqcXNndHZqeW9icWxyZmR2cHlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTE0NjYsImV4cCI6MjA5NTcyNzQ2Nn0.mwa1nNhnH6Mh1TGDHslWYbtSVKq3yjWxBCrNeqZwrlo';
+var curUser=null, authToken=null, isRegMode=false;
 
-var CE=[{id:'food',label:'อาหาร/เครื่องดื่ม',icon:'ti-bowl',color:'#1D9E75'},{id:'shop',label:'ช้อปปิ้ง',icon:'ti-shopping-bag',color:'#378ADD'},{id:'entertain',label:'บันเทิง',icon:'ti-confetti',color:'#BA7517'},{id:'transport',label:'เดินทาง',icon:'ti-car',color:'#D4537E'},{id:'other',label:'อื่นๆ',icon:'ti-dots',color:'#888780'}];
-var CI=[{id:'salary',label:'เงินเดือน',icon:'ti-briefcase',color:'#534AB7'},{id:'bonus',label:'โบนัส',icon:'ti-gift',color:'#D4537E'},{id:'freelance',label:'ฟรีแลนซ์',icon:'ti-device-laptop',color:'#0F6E56'},{id:'other',label:'อื่นๆ',icon:'ti-dots',color:'#888780'}];
-var CS=[{id:'save',label:'เงินออม',icon:'ti-piggy-bank',color:'#534AB7'}];
-
-var curType='income',selCat='salary',curDate=new Date(),barInst=null,pieInst=null,savInst=null,allTxs=[];
-var editingId=null;
-var curChartTab='bar';
-var MN=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-
-function mk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
-function ml(d){return MN[d.getMonth()]+' '+(d.getFullYear()+543)}
-function fmt(n){return'฿'+Math.round(Math.abs(Number(n))).toLocaleString('th-TH')}
-function gc(type,id){
-  var l=type==='income'?CI:type==='saving'?CS:CE;
-  return l.find(function(c){return c.id===id})||{label:id,icon:'ti-circle',color:'#888780'};
+/* ===== SUPABASE HELPERS ===== */
+async function sbAuth(path,body){
+  var res=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  var d=await res.json();if(d.error)throw new Error(d.error.message||d.msg||'Auth error');return d;
 }
-function showLov(v){document.getElementById('lov').className='lov'+(v?' on':'')}
-
 async function sbFetch(path,method,body){
-  var opts={method:method||'GET',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''}};
+  var headers={'apikey':SB_KEY,'Authorization':'Bearer '+(authToken||SB_KEY),'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''};
+  var opts={method:method||'GET',headers:headers};
   if(body)opts.body=JSON.stringify(body);
   var res=await fetch(SB_URL+'/rest/v1/'+path,opts);
   if(!res.ok){var e=await res.text();throw new Error(e)}
   var txt=await res.text();return txt?JSON.parse(txt):[];
 }
 
+/* ===== AUTH MODE TOGGLE ===== */
+function toggleAuthMode(){
+  isRegMode=!isRegMode;
+  document.getElementById('login-sub').textContent=isRegMode?'สร้างบัญชีใหม่':'ยินดีต้อนรับกลับมา';
+  document.getElementById('auth-btn').textContent=isRegMode?'สมัครสมาชิก':'เข้าสู่ระบบ';
+  document.getElementById('auth-pw2-wrap').style.display=isRegMode?'block':'none';
+  document.getElementById('auth-toggle-txt').textContent=isRegMode?'มีบัญชีแล้ว? ':'ยังไม่มีบัญชี? ';
+  document.querySelector('#auth-toggle-txt+span').textContent=isRegMode?'เข้าสู่ระบบ':'สมัครสมาชิก';
+  document.getElementById('auth-err').textContent='';
+}
+
+async function doAuth(){
+  var email=document.getElementById('auth-email').value.trim();
+  var pw=document.getElementById('auth-pw').value;
+  var pw2=document.getElementById('auth-pw2').value;
+  var errEl=document.getElementById('auth-err');
+  var btn=document.getElementById('auth-btn');
+  if(!email||!pw){errEl.textContent='กรุณากรอกอีเมลและรหัสผ่าน';return}
+  if(isRegMode&&pw!==pw2){errEl.textContent='รหัสผ่านไม่ตรงกัน';return}
+  if(isRegMode&&pw.length<6){errEl.textContent='รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';return}
+  btn.disabled=true;btn.textContent='กำลังดำเนินการ...';errEl.textContent='';
+  try{
+    var d=await sbAuth(isRegMode?'signup':'token?grant_type=password',{email,password:pw});
+    authToken=d.access_token;
+    curUser=d.user;
+    wakeUp();
+    setTimeout(function(){showApp();},600);
+  }catch(e){
+    errEl.textContent=e.message==='Invalid login credentials'?'อีเมลหรือรหัสผ่านไม่ถูกต้อง':e.message;
+  }
+  btn.disabled=false;btn.textContent=isRegMode?'สมัครสมาชิก':'เข้าสู่ระบบ';
+}
+
+function showApp(){
+  document.getElementById('login-page').classList.add('hide');
+  document.getElementById('app').classList.add('show');
+  document.getElementById('fab').style.display='flex';
+  document.getElementById('user-email-txt').textContent=curUser.email;
+  stopPigAnim();
+  loadTxs().then(function(){refresh()});
+}
+
+async function doLogout(){
+  try{await sbAuth('logout',{})}catch(e){}
+  authToken=null;curUser=null;allTxs=[];
+  document.getElementById('login-page').classList.remove('hide');
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('fab').style.display='none';
+  document.getElementById('auth-email').value='';
+  document.getElementById('auth-pw').value='';
+  document.getElementById('auth-err').textContent='';
+  startPigAnim();
+  resetIdle();
+}
+
+/* ===== APP DATA ===== */
+var CE=[{id:'food',label:'อาหาร/เครื่องดื่ม',icon:'ti-bowl',color:'#1D9E75'},{id:'shop',label:'ช้อปปิ้ง',icon:'ti-shopping-bag',color:'#378ADD'},{id:'entertain',label:'บันเทิง',icon:'ti-confetti',color:'#BA7517'},{id:'transport',label:'เดินทาง',icon:'ti-car',color:'#D4537E'},{id:'other',label:'อื่นๆ',icon:'ti-dots',color:'#888780'}];
+var CI=[{id:'salary',label:'เงินเดือน',icon:'ti-briefcase',color:'#534AB7'},{id:'bonus',label:'โบนัส',icon:'ti-gift',color:'#D4537E'},{id:'freelance',label:'ฟรีแลนซ์',icon:'ti-device-laptop',color:'#0F6E56'},{id:'other',label:'อื่นๆ',icon:'ti-dots',color:'#888780'}];
+var curType='income',selCat='salary',curDate=new Date(),barInst=null,pieInst=null,savInst=null,allTxs=[];
+var editingId=null,curChartTab='bar';
+var MN=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function mk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function ml(d){return MN[d.getMonth()]+' '+(d.getFullYear()+543)}
+function fmt(n){return'฿'+Math.round(Math.abs(Number(n))).toLocaleString('th-TH')}
+function gc(type,id){var l=type==='income'?CI:type==='saving'?[{id:'save',label:'เงินออม',icon:'ti-piggy-bank',color:'#534AB7'}]:CE;return l.find(function(c){return c.id===id})||{label:id,icon:'ti-circle',color:'#888780'}}
+function showLov(v){document.getElementById('lov').className='lov'+(v?' on':'')}
+
 async function loadTxs(){
   showLov(true);
   try{allTxs=await sbFetch('transactions?select=*&order=date.desc')}
-  catch(e){console.warn('Supabase offline (sandbox/preview):',e.message);allTxs=[]}
+  catch(e){console.warn('load error:',e.message);allTxs=[]}
   showLov(false);
 }
-
 function getTxsByMonth(key){return allTxs.filter(function(t){return t.date&&t.date.substring(0,7)===key}).sort(function(a,b){return new Date(b.date)-new Date(a.date)})}
-
-/* cumulative savings up to and including given month key */
-function getCumulativeSavings(upToKey){
-  return allTxs.filter(function(t){
-    return t.type==='saving'&&t.date&&t.date.substring(0,7)<=upToKey;
-  }).reduce(function(s,t){return s+Number(t.amount)},0);
-}
-function getTotalSavings(){
-  return allTxs.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0);
-}
-
+function getCumulativeSavings(upToKey){return allTxs.filter(function(t){return t.type==='saving'&&t.date&&t.date.substring(0,7)<=upToKey}).reduce(function(s,t){return s+Number(t.amount)},0)}
+function getTotalSavings(){return allTxs.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0)}
 function txHTML(tx,del){
-  var cat=gc(tx.type,tx.cat);
-  var sign=tx.type==='income'?'+':tx.type==='saving'?'+':'-';
-  var color=tx.type==='income'?'var(--inc)':tx.type==='saving'?'var(--sav)':'var(--exp)';
-  return '<div class="txi"><div class="txico" style="background:'+cat.color+'22"><i class="ti '+cat.icon+'" style="color:'+cat.color+'"></i></div>'
-    +'<div class="txin"><div class="txn">'+tx.name+'</div><div class="txm">'+cat.label+' · '+tx.date+'</div></div>'
-    +'<div class="txa" style="color:'+color+'">'+sign+fmt(tx.amount)+'</div>'
-    +(del?'<div class="tx-actions"><button class="txe-btn" onclick="openEdit(\''+tx.id+'\')"><i class="ti ti-edit"></span></button><button class="txd" onclick="delTx(\''+tx.id+'\')"><i class="ti ti-trash"></span></button></div>':'')
-    +'</div>';
+  var cat=gc(tx.type,tx.cat);var sign=tx.type==='income'?'+':tx.type==='saving'?'+':'-';var color=tx.type==='income'?'var(--inc)':tx.type==='saving'?'var(--sav)':'var(--exp)';
+  return'<div class="txi"><div class="txico" style="background:'+cat.color+'22"><i class="ti '+cat.icon+'" style="color:'+cat.color+'"></i></div><div class="txin"><div class="txn">'+tx.name+'</div><div class="txm">'+cat.label+' · '+tx.date+'</div></div><div class="txa" style="color:'+color+'">'+sign+fmt(tx.amount)+'</div>'+(del?'<div class="tx-actions"><button class="txe-btn" onclick="openEdit(\''+tx.id+'\')"><i class="ti ti-edit"></i></button><button class="txd" onclick="delTx(\''+tx.id+'\')"><i class="ti ti-trash"></i></button></div>':'')+'</div>';
 }
-
 function destroyChart(inst){if(inst){try{inst.destroy()}catch(e){}}return null}
-
-function setChartTab(tab,btn){
-  curChartTab=tab;
-  document.querySelectorAll('.ctab').forEach(function(b){b.classList.remove('on')});
-  btn.classList.add('on');
-  document.getElementById('chart-bar-wrap').style.display=tab==='bar'?'block':'none';
-  document.getElementById('chart-sav-wrap').style.display=tab==='sav'?'block':'none';
-  if(tab==='sav')renderSavingsChart();
-}
-
-function renderSavingsChart(){
-  savInst=destroyChart(savInst);
-  var lblA=[],savA=[];
-  for(var i=5;i>=0;i--){
-    var d=new Date(curDate.getFullYear(),curDate.getMonth()-i,1);
-    var key=mk(d);
-    savA.push(getCumulativeSavings(key));
-    lblA.push(MN[d.getMonth()]);
-  }
-  var sc=document.getElementById('savC');
-  if(sc&&window.Chart){
-    savInst=new Chart(sc,{type:'line',data:{labels:lblA,datasets:[{label:'เงินออมสะสม',data:savA,borderColor:'#534AB7',backgroundColor:'rgba(83,74,183,.1)',tension:.35,fill:true,pointBackgroundColor:'#534AB7',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{callback:function(v){return'฿'+v.toLocaleString()}}}}}});
-  }
-}
-
+function setChartTab(tab,btn){curChartTab=tab;document.querySelectorAll('.ctab').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');document.getElementById('chart-bar-wrap').style.display=tab==='bar'?'block':'none';document.getElementById('chart-sav-wrap').style.display=tab==='sav'?'block':'none';if(tab==='sav')renderSavingsChart()}
+function renderSavingsChart(){savInst=destroyChart(savInst);var lblA=[],savA=[];for(var i=5;i>=0;i--){var d=new Date(curDate.getFullYear(),curDate.getMonth()-i,1);savA.push(getCumulativeSavings(mk(d)));lblA.push(MN[d.getMonth()])}var sc=document.getElementById('savC');if(sc&&window.Chart){savInst=new Chart(sc,{type:'line',data:{labels:lblA,datasets:[{label:'เงินออมสะสม',data:savA,borderColor:'#534AB7',backgroundColor:'rgba(83,74,183,.1)',tension:.35,fill:true,pointBackgroundColor:'#534AB7',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{callback:function(v){return'฿'+v.toLocaleString()}}}}}})}}
 function refresh(){
   var key=mk(curDate);var txs=getTxsByMonth(key);
   var inc=txs.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0);
   var exp=txs.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0);
   var sav=txs.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0);
-  var bal=inc-exp-sav;
-  var totalSav=getTotalSavings();
-
+  var bal=inc-exp-sav;var totalSav=getTotalSavings();
   ['ml1','ml2','ml3'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=ml(curDate)});
-  document.getElementById('ti').textContent=fmt(inc);
-  document.getElementById('te').textContent=fmt(exp);
+  document.getElementById('ti').textContent=fmt(inc);document.getElementById('te').textContent=fmt(exp);
   var tb=document.getElementById('tb');tb.textContent=(bal<0?'-':'')+fmt(bal);tb.style.color=bal>=0?'var(--inc)':'var(--exp)';
-
-  // savings banners
-  ['total-savings','total-savings2'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.textContent=fmt(totalSav);
-  });
-
+  ['total-savings','total-savings2'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=fmt(totalSav)});
   document.getElementById('rl').innerHTML=txs.length?txs.slice(0,5).map(function(t){return txHTML(t,false)}).join(''):'<div class="emp"><i class="ti ti-clock"></i>ยังไม่มีรายการ</div>';
   var txl=document.getElementById('txl');var txe=document.getElementById('txe');
-  if(txs.length){txl.innerHTML=txs.map(function(t){return txHTML(t,true)}).join('');txe.style.display='none'}
-  else{txl.innerHTML='';txe.style.display='block'}
-
-  // bar chart
-  barInst=destroyChart(barInst);
-  var incA=[],expA=[],lblA=[];
+  if(txs.length){txl.innerHTML=txs.map(function(t){return txHTML(t,true)}).join('');txe.style.display='none'}else{txl.innerHTML='';txe.style.display='block'}
+  barInst=destroyChart(barInst);var incA=[],expA=[],lblA=[];
   for(var i=5;i>=0;i--){var d=new Date(curDate.getFullYear(),curDate.getMonth()-i,1);var mt=getTxsByMonth(mk(d));incA.push(mt.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0));expA.push(mt.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0));lblA.push(MN[d.getMonth()])}
-  var bc=document.getElementById('barC');
-  if(bc&&window.Chart){barInst=new Chart(bc,{type:'bar',data:{labels:lblA,datasets:[{label:'รายรับ',data:incA,backgroundColor:'#1D9E75',borderRadius:4},{label:'รายจ่าย',data:expA,backgroundColor:'#D85A30',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{callback:function(v){return'฿'+v.toLocaleString()}}}}}})}
-
+  var bc=document.getElementById('barC');if(bc&&window.Chart){barInst=new Chart(bc,{type:'bar',data:{labels:lblA,datasets:[{label:'รายรับ',data:incA,backgroundColor:'#1D9E75',borderRadius:4},{label:'รายจ่าย',data:expA,backgroundColor:'#D85A30',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{callback:function(v){return'฿'+v.toLocaleString()}}}}}})}
   if(curChartTab==='sav')renderSavingsChart();
-
-  // pie chart
-  pieInst=destroyChart(pieInst);
-  var expTxs=txs.filter(function(t){return t.type==='expense'});var cm={};
-  expTxs.forEach(function(t){cm[t.cat]=(cm[t.cat]||0)+Number(t.amount)});var ck=Object.keys(cm);
+  pieInst=destroyChart(pieInst);var expTxs=txs.filter(function(t){return t.type==='expense'});var cm={};expTxs.forEach(function(t){cm[t.cat]=(cm[t.cat]||0)+Number(t.amount)});var ck=Object.keys(cm);
   var pc=document.getElementById('pieC');
-  if(pc&&ck.length&&window.Chart){
-    pieInst=new Chart(pc,{type:'doughnut',data:{labels:ck.map(function(k){return gc('expense',k).label}),datasets:[{data:ck.map(function(k){return cm[k]}),backgroundColor:ck.map(function(k){return gc('expense',k).color}),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});
-    var total=ck.reduce(function(s,k){return s+cm[k]},0);
-    document.getElementById('catd').innerHTML=ck.sort(function(a,b){return cm[b]-cm[a]}).map(function(k){var cat=gc('expense',k);var pct=total?Math.round(cm[k]/total*100):0;return'<div class="cr"><span class="cd" style="background:'+cat.color+'"></span><span style="flex:1;font-size:14px">'+cat.label+'</span><span style="font-size:13px;color:var(--text2);margin-right:8px">'+pct+'%</span><span style="font-size:14px;font-weight:500">'+fmt(cm[k])+'</span></div>'}).join('');
-  } else if(pc){document.getElementById('catd').innerHTML='<div class="emp"><i class="ti ti-chart-pie-off"></i>ยังไม่มีรายจ่ายเดือนนี้</div>'}
-
-  // savings page
+  if(pc&&ck.length&&window.Chart){pieInst=new Chart(pc,{type:'doughnut',data:{labels:ck.map(function(k){return gc('expense',k).label}),datasets:[{data:ck.map(function(k){return cm[k]}),backgroundColor:ck.map(function(k){return gc('expense',k).color}),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});var total=ck.reduce(function(s,k){return s+cm[k]},0);document.getElementById('catd').innerHTML=ck.sort(function(a,b){return cm[b]-cm[a]}).map(function(k){var cat=gc('expense',k);var pct=total?Math.round(cm[k]/total*100):0;return'<div class="cr"><span class="cd" style="background:'+cat.color+'"></span><span style="flex:1;font-size:14px">'+cat.label+'</span><span style="font-size:13px;color:var(--text2);margin-right:8px">'+pct+'%</span><span style="font-size:14px;font-weight:500">'+fmt(cm[k])+'</span></div>'}).join('')}else if(pc){document.getElementById('catd').innerHTML='<div class="emp"><i class="ti ti-chart-pie-off"></i>ยังไม่มีรายจ่ายเดือนนี้</div>'}
   renderSavingsPage();
-
-  // history
-  var months={};allTxs.forEach(function(t){var k=t.date.substring(0,7);if(!months[k])months[k]=[];months[k].push(t)});
-  var allK=Object.keys(months).sort().reverse();var hl=document.getElementById('histl');
+  var months={};allTxs.forEach(function(t){var k=t.date.substring(0,7);if(!months[k])months[k]=[];months[k].push(t)});var allK=Object.keys(months).sort().reverse();var hl=document.getElementById('histl');
   if(!allK.length){hl.innerHTML='<div class="emp"><i class="ti ti-history"></i>ยังไม่มีข้อมูล</div>';return}
-  hl.innerHTML=allK.map(function(k){
-    var mt=months[k];
-    var i2=mt.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0);
-    var e2=mt.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0);
-    var s2=mt.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0);
-    var b2=i2-e2-s2;
-    var cumSav=getCumulativeSavings(k);
-    var p=k.split('-');var d2=new Date(p[0],parseInt(p[1])-1,1);
-    return'<div class="hi"><div class="ht"><span class="hm">'+ml(d2)+'</span><span class="hb" style="color:'+(b2>=0?'var(--inc)':'var(--exp)')+'">'+( b2>=0?'+':'-')+fmt(b2)+'</span></div><div style="display:flex;gap:10px;font-size:12px;color:var(--text2);flex-wrap:wrap"><span style="color:var(--inc)">รับ '+fmt(i2)+'</span><span style="color:var(--exp)">จ่าย '+fmt(e2)+'</span>'+(s2>0?'<span style="color:var(--sav)">ออม '+fmt(s2)+'</span>':'')+'<span>'+mt.length+' รายการ</span></div>'+(cumSav>0?'<div style="font-size:12px;color:var(--sav);margin-top:4px">ออมสะสม: '+fmt(cumSav)+'</div>':'')+'</div>';
-  }).join('');
+  hl.innerHTML=allK.map(function(k){var mt=months[k];var i2=mt.filter(function(t){return t.type==='income'}).reduce(function(s,t){return s+Number(t.amount)},0);var e2=mt.filter(function(t){return t.type==='expense'}).reduce(function(s,t){return s+Number(t.amount)},0);var s2=mt.filter(function(t){return t.type==='saving'}).reduce(function(s,t){return s+Number(t.amount)},0);var b2=i2-e2-s2;var cumSav=getCumulativeSavings(k);var p=k.split('-');var d2=new Date(p[0],parseInt(p[1])-1,1);return'<div class="hi"><div class="ht"><span class="hm">'+ml(d2)+'</span><span class="hb" style="color:'+(b2>=0?'var(--inc)':'var(--exp)')+'">'+( b2>=0?'+':'-')+fmt(b2)+'</span></div><div style="display:flex;gap:10px;font-size:12px;color:var(--text2);flex-wrap:wrap"><span style="color:var(--inc)">รับ '+fmt(i2)+'</span><span style="color:var(--exp)">จ่าย '+fmt(e2)+'</span>'+(s2>0?'<span style="color:var(--sav)">ออม '+fmt(s2)+'</span>':'')+'<span>'+mt.length+' รายการ</span></div>'+(cumSav>0?'<div style="font-size:12px;color:var(--sav);margin-top:4px">ออมสะสม: '+fmt(cumSav)+'</div>':'')+'</div>'}).join('');
 }
-
-function renderSavingsPage(){
-  var totalSav=getTotalSavings();
-  // group savings by month
-  var savByMonth={};
-  allTxs.filter(function(t){return t.type==='saving'}).forEach(function(t){
-    var k=t.date.substring(0,7);
-    if(!savByMonth[k])savByMonth[k]=0;
-    savByMonth[k]+=Number(t.amount);
-  });
-  var keys=Object.keys(savByMonth).sort().reverse();
-  var maxSav=keys.length?Math.max.apply(null,keys.map(function(k){return savByMonth[k]})):1;
-  var sl=document.getElementById('sav-list');
-  if(!keys.length){sl.innerHTML='<div class="emp"><i class="ti ti-piggy-bank"></i>ยังไม่มีรายการเงินออม<br>กด + แล้วเลือก "ฝากเงินออม"</div>';return}
-  var running=0;
-  var allKeys=keys.slice().reverse(); // asc for cumulative
-  var cumMap={};
-  var cum=0;
-  allKeys.forEach(function(k){cum+=savByMonth[k];cumMap[k]=cum;});
-  sl.innerHTML=keys.map(function(k){
-    var p=k.split('-');var d=new Date(p[0],parseInt(p[1])-1,1);
-    var pct=Math.round(savByMonth[k]/maxSav*100);
-    var cumPct=totalSav?Math.round(cumMap[k]/totalSav*100):0;
-    return'<div class="sav-month-card"><div class="sm-header"><span class="sm-title">'+ml(d)+'</span><span class="sm-amount">+'+fmt(savByMonth[k])+'</span></div>'
-      +'<div style="font-size:12px;color:var(--text2)">สะสม: <span style="color:var(--sav);font-weight:600">'+fmt(cumMap[k])+'</span></div>'
-      +'<div class="sav-cumbar"><div class="sav-cumbar-fill" style="width:'+cumPct+'%"></div></div></div>';
-  }).join('');
-}
-
+function renderSavingsPage(){var totalSav=getTotalSavings();var savByMonth={};allTxs.filter(function(t){return t.type==='saving'}).forEach(function(t){var k=t.date.substring(0,7);if(!savByMonth[k])savByMonth[k]=0;savByMonth[k]+=Number(t.amount)});var keys=Object.keys(savByMonth).sort().reverse();var sl=document.getElementById('sav-list');if(!keys.length){sl.innerHTML='<div class="emp"><i class="ti ti-piggy-bank"></i>ยังไม่มีรายการเงินออม<br>กด + แล้วเลือก "ฝากเงินออม"</div>';return}var allKeys=keys.slice().reverse();var cumMap={};var cum=0;allKeys.forEach(function(k){cum+=savByMonth[k];cumMap[k]=cum});['total-savings','total-savings2'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=fmt(totalSav)});sl.innerHTML=keys.map(function(k){var p=k.split('-');var d=new Date(p[0],parseInt(p[1])-1,1);var cumPct=totalSav?Math.round(cumMap[k]/totalSav*100):0;return'<div class="sav-month-card"><div class="sm-header"><span class="sm-title">'+ml(d)+'</span><span class="sm-amount">+'+fmt(savByMonth[k])+'</span></div><div style="font-size:12px;color:var(--text2)">สะสม: <span style="color:var(--sav);font-weight:600">'+fmt(cumMap[k])+'</span></div><div class="sav-cumbar"><div class="sav-cumbar-fill" style="width:'+cumPct+'%"></div></div></div>'}).join('')}
 function showPg(id,btn){document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on')});document.getElementById('pg-'+id).classList.add('on');document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');refresh()}
 function chgM(d){curDate=new Date(curDate.getFullYear(),curDate.getMonth()+d,1);refresh()}
-
-function openM(){
-  editingId=null;
-  document.getElementById('modal-title').textContent='เพิ่มรายการ';
-  document.getElementById('submitBtn').textContent='บันทึกรายการ';
-  document.getElementById('submitBtn').className='sub';
-  document.getElementById('ocr-section').style.display='block';
-  document.getElementById('modal').classList.add('on');
-  document.getElementById('id').value=new Date().toISOString().split('T')[0];
-  document.getElementById('in').value='';document.getElementById('ia').value='';
-  document.getElementById('ss').className='ss';document.getElementById('ss').textContent='';
-  document.getElementById('rf').value='';document.getElementById('ocrProg').style.display='none';
-  setT('income');
-}
-
-function openEdit(id){
-  var tx=allTxs.find(function(t){return t.id===id});
-  if(!tx)return;
-  editingId=id;
-  document.getElementById('modal-title').textContent='แก้ไขรายการ';
-  document.getElementById('submitBtn').textContent='บันทึกการแก้ไข';
-  document.getElementById('submitBtn').className='sub edit-mode';
-  document.getElementById('ocr-section').style.display='none';
-  document.getElementById('modal').classList.add('on');
-  document.getElementById('in').value=tx.name;
-  document.getElementById('ia').value=tx.amount;
-  document.getElementById('id').value=tx.date;
-  setT(tx.type);
-  // select correct cat
-  selCat=tx.cat;
-  document.querySelectorAll('.catb').forEach(function(b){
-    b.classList.toggle('on',b.getAttribute('data-catid')===tx.cat);
-  });
-  if(tx.cat==='other'||(!['food','shop','entertain','transport','salary','bonus','freelance','save'].includes(tx.cat))){
-    document.getElementById('cfg').style.display='block';
-    document.getElementById('ic').value=tx.cat;
-  }
-}
-
-function closeM(){document.getElementById('modal').classList.remove('on');editingId=null;}
-
-function setT(t){
-  curType=t;
-  document.getElementById('bi').className='tb'+(t==='income'?' ai':'');
-  document.getElementById('be').className='tb'+(t==='expense'?' ae':'');
-  document.getElementById('bs').className='tb'+(t==='saving'?' as':'');
-  renderCats();
-  // hide cat section for saving (only one cat)
-  document.getElementById('cat-section').style.display=t==='saving'?'none':'block';
-  if(t==='saving')selCat='save';
-}
-
-function renderCats(){
-  if(curType==='saving'){document.getElementById('cg').innerHTML='';return;}
-  var cats=curType==='income'?CI:CE;
-  selCat=cats[0].id;
-  document.getElementById('cg').innerHTML=cats.map(function(c){
-    return'<button class="catb'+(c.id===selCat?' on':'')+'" data-catid="'+c.id+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>';
-  }).join('');
-  document.getElementById('cfg').style.display='none';
-}
-
-function selC(id,el){
-  selCat=id;
-  document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});
-  el.classList.add('on');
-  document.getElementById('cfg').style.display=id==='other'?'block':'none';
-}
-
+function openM(){editingId=null;document.getElementById('modal-title').textContent='เพิ่มรายการ';document.getElementById('submitBtn').textContent='บันทึกรายการ';document.getElementById('submitBtn').className='sub';document.getElementById('ocr-section').style.display='block';document.getElementById('modal').classList.add('on');document.getElementById('id').value=new Date().toISOString().split('T')[0];document.getElementById('in').value='';document.getElementById('ia').value='';document.getElementById('ss').className='ss';document.getElementById('ss').textContent='';document.getElementById('rf').value='';document.getElementById('ocrProg').style.display='none';setT('income')}
+function openEdit(id){var tx=allTxs.find(function(t){return t.id===id});if(!tx)return;editingId=id;document.getElementById('modal-title').textContent='แก้ไขรายการ';document.getElementById('submitBtn').textContent='บันทึกการแก้ไข';document.getElementById('submitBtn').className='sub edit-mode';document.getElementById('ocr-section').style.display='none';document.getElementById('modal').classList.add('on');document.getElementById('in').value=tx.name;document.getElementById('ia').value=tx.amount;document.getElementById('id').value=tx.date;setT(tx.type);selCat=tx.cat;document.querySelectorAll('.catb').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-catid')===tx.cat)});if(!['food','shop','entertain','transport','salary','bonus','freelance','save'].includes(tx.cat)){document.getElementById('cfg').style.display='block';document.getElementById('ic').value=tx.cat}}
+function closeM(){document.getElementById('modal').classList.remove('on');editingId=null}
+function setT(t){curType=t;document.getElementById('bi').className='tb'+(t==='income'?' ai':'');document.getElementById('be').className='tb'+(t==='expense'?' ae':'');document.getElementById('bs').className='tb'+(t==='saving'?' as':'');renderCats();document.getElementById('cat-section').style.display=t==='saving'?'none':'block';if(t==='saving')selCat='save'}
+function renderCats(){if(curType==='saving'){document.getElementById('cg').innerHTML='';return}var cats=curType==='income'?CI:CE;selCat=cats[0].id;document.getElementById('cg').innerHTML=cats.map(function(c){return'<button class="catb'+(c.id===selCat?' on':'')+'" data-catid="'+c.id+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>'}).join('');document.getElementById('cfg').style.display='none'}
+function selC(id,el){selCat=id;document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('cfg').style.display=id==='other'?'block':'none'}
 async function submitTx(){
-  var name=document.getElementById('in').value.trim();
-  var amount=parseFloat(document.getElementById('ia').value);
-  var date=document.getElementById('id').value;
-  var cat=curType==='saving'?'save':selCat;
+  var name=document.getElementById('in').value.trim();var amount=parseFloat(document.getElementById('ia').value);var date=document.getElementById('id').value;var cat=curType==='saving'?'save':selCat;
   if(cat==='other'){var cc=document.getElementById('ic').value.trim();if(cc)cat=cc}
   if(!name||!amount||!date||amount<=0){alert('กรุณากรอกข้อมูลให้ครบ');return}
-
   showLov(true);
   try{
     if(editingId){
-      // PATCH (update)
       await sbFetch('transactions?id=eq.'+editingId,'PATCH',{name:name,amount:amount,date:date,type:curType,cat:cat});
       var idx=allTxs.findIndex(function(t){return t.id===editingId});
       if(idx>=0)allTxs[idx]=Object.assign(allTxs[idx],{name:name,amount:amount,date:date,type:curType,cat:cat});
-    } else {
-      var tx={id:Date.now().toString(),type:curType,name:name,amount:amount,date:date,cat:cat};
-      await sbFetch('transactions','POST',tx);
-      allTxs.unshift(tx);
+    }else{
+      var tx={id:Date.now().toString(),type:curType,name:name,amount:amount,date:date,cat:cat,user_id:curUser.id};
+      await sbFetch('transactions','POST',tx);allTxs.unshift(tx);
     }
-    closeM();
-    curDate=new Date(date.replace(/-/g,'/'));
-    curDate=new Date(curDate.getFullYear(),curDate.getMonth(),1);
-    refresh();
+    closeM();curDate=new Date(date.replace(/-/g,'/'));curDate=new Date(curDate.getFullYear(),curDate.getMonth(),1);refresh();
   }catch(e){alert('บันทึกไม่สำเร็จ: '+e.message)}
   showLov(false);
 }
-
-async function delTx(id){
-  if(!confirm('ลบรายการนี้?'))return;
-  showLov(true);
-  try{
-    await sbFetch('transactions?id=eq.'+id,'DELETE');
-    allTxs=allTxs.filter(function(t){return t.id!==id});
-    refresh();
-  }catch(e){alert('ลบไม่สำเร็จ: '+e.message)}
-  showLov(false);
-}
-
-// OCR
+async function delTx(id){if(!confirm('ลบรายการนี้?'))return;showLov(true);try{await sbFetch('transactions?id=eq.'+id,'DELETE');allTxs=allTxs.filter(function(t){return t.id!==id});refresh()}catch(e){alert('ลบไม่สำเร็จ: '+e.message)}showLov(false)}
 function extractAmount(text){var patterns=[/(?:total|รวม|ยอดรวม|สุทธิ|grand\s*total)[^\d]*(\d[\d,]*\.?\d*)/gi,/(\d[\d,]*\.\d{2})/gi,/(?:฿|thb)\s*(\d[\d,]*\.?\d*)/gi];var found=[];for(var i=0;i<patterns.length;i++){var m;var re=patterns[i];re.lastIndex=0;while((m=re.exec(text))!==null){var n=parseFloat(m[1].replace(/,/g,''));if(n>0&&n<1000000)found.push(n)}if(i===0&&found.length>0)break}if(!found.length)return null;return found.sort(function(a,b){return b-a})[0]}
 function extractName(text){var lines=text.split('\n').map(function(l){return l.trim()}).filter(function(l){return l.length>2});for(var i=0;i<Math.min(5,lines.length);i++){if(!/^[\d\s\.,\-\/\*]+$/.test(lines[i])&&lines[i].length>2)return lines[i].substring(0,40)}return lines[0]?lines[0].substring(0,40):''}
+async function doScan(e){var file=e.target.files[0];if(!file)return;var ss=document.getElementById('ss');var prog=document.getElementById('ocrProg');var progBar=document.getElementById('ocrBar');var progTxt=document.getElementById('ocrTxt');ss.className='ss';ss.textContent='';prog.style.display='block';progBar.style.width='5%';progTxt.textContent='กำลังโหลด Tesseract OCR...';try{if(!window.Tesseract){await new Promise(function(res,rej){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}progBar.style.width='20%';progTxt.textContent='กำลังวิเคราะห์รูปภาพ...';var result=await Tesseract.recognize(file,'tha+eng',{logger:function(m){if(m.status==='recognizing text'){progBar.style.width=(20+Math.round(m.progress*70))+'%';progTxt.textContent='กำลังอ่านตัวอักษร... '+Math.round(m.progress*100)+'%'}}});progBar.style.width='100%';progTxt.textContent='เสร็จแล้ว!';var text=result.data.text;var amount=extractAmount(text);var name=extractName(text);if(name)document.getElementById('in').value=name;if(amount)document.getElementById('ia').value=amount;setT('expense');setTimeout(function(){prog.style.display='none'},500);if(name||amount){ss.className='ss ok';ss.innerHTML='<i class="ti ti-check"></i> อ่านสำเร็จ'+(name?' ชื่อ: <strong>'+name+'</strong>':'')+(amount?' ฿'+amount:'')+'<br><small style="opacity:.7">ตรวจสอบและแก้ไขได้ก่อนบันทึก</small>'}else{ss.className='ss er';ss.textContent='อ่านตัวเลขไม่ได้ กรุณากรอกเอง'}}catch(err){prog.style.display='none';ss.className='ss er';ss.textContent='เกิดข้อผิดพลาด: '+err.message}}
 
-async function doScan(e){
-  var file=e.target.files[0];if(!file)return;
-  var ss=document.getElementById('ss');var prog=document.getElementById('ocrProg');var progBar=document.getElementById('ocrBar');var progTxt=document.getElementById('ocrTxt');
-  ss.className='ss';ss.textContent='';prog.style.display='block';progBar.style.width='5%';progTxt.textContent='กำลังโหลด Tesseract OCR...';
-  try{
-    if(!window.Tesseract){await new Promise(function(res,rej){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
-    progBar.style.width='20%';progTxt.textContent='กำลังวิเคราะห์รูปภาพ...';
-    var result=await Tesseract.recognize(file,'tha+eng',{logger:function(m){if(m.status==='recognizing text'){progBar.style.width=(20+Math.round(m.progress*70))+'%';progTxt.textContent='กำลังอ่านตัวอักษร... '+Math.round(m.progress*100)+'%'}}});
-    progBar.style.width='100%';progTxt.textContent='เสร็จแล้ว!';
-    var text=result.data.text;var amount=extractAmount(text);var name=extractName(text);
-    if(name)document.getElementById('in').value=name;if(amount)document.getElementById('ia').value=amount;setT('expense');
-    setTimeout(function(){prog.style.display='none'},500);
-    if(name||amount){ss.className='ss ok';ss.innerHTML='<i class="ti ti-check"></i> อ่านสำเร็จ'+(name?' ชื่อ: <strong>'+name+'</strong>':'')+(amount?' ฿'+amount:'')+'<br><small style="opacity:.7">ตรวจสอบและแก้ไขได้ก่อนบันทึก</small>'}
-    else{ss.className='ss er';ss.textContent='อ่านตัวเลขไม่ได้ กรุณากรอกเอง'}
-  }catch(err){prog.style.display='none';ss.className='ss er';ss.textContent='เกิดข้อผิดพลาด: '+err.message}
+/* ===== PIXEL PIG ANIMATION ===== */
+var pigC=document.getElementById('pig-canvas');
+var pigCtx=pigC.getContext('2d');
+pigCtx.imageSmoothingEnabled=false;
+var SZ=6,pigState='awake',pigTick=0,blinkT=80,pigAnimId=null;
+var zzzList=[],sparks=[],idleTimer=null,zzzSpawnT=0;
+var PK='#F9B8CC',PD='#F08AAA',PE='#E06688',WH='#FFFFFF',BK='#2C2C2A',NS='#F7A0B8',ND='#E8809B',SV='#7F77DD';
+function pigBg(){pigCtx.clearRect(0,0,200,200);pigCtx.fillStyle='#FFF0F6';pigCtx.beginPath();pigCtx.arc(100,100,92,0,Math.PI*2);pigCtx.fill();pigCtx.fillStyle='rgba(0,0,0,0.07)';pigCtx.beginPath();pigCtx.ellipse(100,184,40,8,0,0,Math.PI*2);pigCtx.fill()}
+function pp(x,y,c,by){pigCtx.fillStyle=c;pigCtx.fillRect((8+x)*SZ,(4+y+by)*SZ,SZ,SZ)}
+function eyeOpen(x,y,by){pp(x,y,WH,by);pp(x+1,y,WH,by);pp(x,y+1,WH,by);pp(x+1,y+1,WH,by);pp(x,y+1,BK,by);pp(x+1,y+1,BK,by)}
+function eyeHalf(x,y,by){pp(x,y,PK,by);pp(x+1,y,PK,by);pp(x,y+1,BK,by);pp(x+1,y+1,BK,by)}
+function eyeClose(x,y,by){pp(x,y,PD,by);pp(x+1,y,PD,by);pp(x,y+1,PD,by);pp(x+1,y+1,PD,by);pigCtx.fillStyle=PE;pigCtx.fillRect((8+x)*SZ,(4+y+1+by)*SZ+SZ-2,2*SZ,2)}
+function drawPig(st,by){
+  by=Math.round(by||0);pigBg();
+  var r=function(x,y,c){pp(x,y,c,by)};
+  r(3,0,PE);r(4,0,PE);r(10,0,PE);r(11,0,PE);r(3,1,PE);r(4,1,PE);r(10,1,PE);r(11,1,PE);
+  for(var x=2;x<=12;x++)r(x,2,PK);for(var x=1;x<=13;x++)r(x,3,PK);
+  for(var x=1;x<=13;x++)r(x,4,PK);for(var x=0;x<=14;x++)r(x,5,PK);
+  for(var x=0;x<=14;x++)r(x,6,PK);for(var x=0;x<=14;x++)r(x,7,PK);
+  for(var x=0;x<=14;x++)r(x,8,PK);
+  r(1,8,PD);r(2,8,PD);r(12,8,PD);r(13,8,PD);
+  for(var x=3;x<=11;x++)r(x,9,NS);for(var x=3;x<=11;x++)r(x,10,NS);
+  r(5,9,ND);r(6,9,ND);r(8,9,ND);r(9,9,ND);
+  for(var x=2;x<=12;x++)r(x,11,PK);for(var x=2;x<=12;x++)r(x,12,PK);
+  for(var x=3;x<=11;x++)r(x,13,PK);for(var x=3;x<=11;x++)r(x,14,PK);
+  r(3,15,PE);r(4,15,PE);r(10,15,PE);r(11,15,PE);
+  pigCtx.fillStyle=BK;pigCtx.fillRect((8+6)*SZ,(4+2+by)*SZ,2*SZ,2);
+  if(st==='awake'){eyeOpen(3,6,by);eyeOpen(9,6,by)}
+  else if(st==='sleepy'||st==='idle'){eyeHalf(3,6,by);eyeHalf(9,6,by)}
+  else if(st==='sleep'){eyeClose(3,6,by);eyeClose(9,6,by)}
+  else if(st==='wakeup'){eyeHalf(3,6,by);eyeHalf(9,6,by)}
 }
+function drawZzz(){for(var z of zzzList){pigCtx.save();pigCtx.globalAlpha=z.alpha;pigCtx.font='bold '+Math.round(z.size)+'px monospace';pigCtx.fillStyle=SV;pigCtx.fillText('z',z.x,z.y);pigCtx.restore()}}
+function drawSparks(){for(var s of sparks){pigCtx.save();pigCtx.globalAlpha=s.life;pigCtx.fillStyle='#FFD700';pigCtx.beginPath();pigCtx.arc(s.x,s.y,3,0,Math.PI*2);pigCtx.fill();pigCtx.restore()}}
+function pigLoop(){
+  pigTick++;var by=0;
+  if(pigState==='sleep'){by=Math.sin(pigTick*0.04)*2.2;zzzSpawnT++;if(zzzSpawnT>55){zzzSpawnT=0;zzzList.push({x:145,y:44,size:18,alpha:0,t:0})}}
+  else if(pigState==='sleepy'){by=Math.sin(pigTick*0.05)*1.2}
+  else if(pigState==='wakeup'){by=Math.sin(pigTick*0.2)*1.5}
+  zzzList=zzzList.filter(function(z){return z.alpha>-0.1});
+  zzzList.forEach(function(z){z.t++;z.y-=0.45;z.x+=0.2;if(z.t<20)z.alpha=Math.min(1,z.alpha+0.06);else z.alpha=Math.max(-0.05,z.alpha-0.025);if(z.t<15)z.size+=0.2});
+  sparks=sparks.filter(function(s){return s.life>0.05});
+  sparks.forEach(function(s){s.x+=s.vx;s.y+=s.vy;s.vy+=0.12;s.life-=0.04});
+  drawPig(pigState,by);
+  if(pigState==='awake'){blinkT--;if(blinkT<=3&&blinkT>0){eyeClose(3,6,0);eyeClose(9,6,0)}if(blinkT<=0)blinkT=Math.floor(Math.random()*100)+80}
+  drawZzz();drawSparks();
+  pigAnimId=requestAnimationFrame(pigLoop);
+}
+function wakeUp(){
+  if(pigState==='sleep'||pigState==='sleepy'||pigState==='idle'){
+    pigState='wakeup';document.getElementById('pig-status').textContent='ตื่นแล้ว! พร้อมออมเงินวันนี้ 💰';
+    sparks=[];zzzList=[];
+    for(var i=0;i<6;i++){var a=Math.random()*Math.PI*2;sparks.push({x:100,y:60,vx:Math.cos(a)*2.5,vy:Math.sin(a)*2.5,life:1})}
+    setTimeout(function(){pigState='awake';document.getElementById('pig-status').textContent='สวัสดี! เข้าสู่ระบบเพื่อดูเงินออม 🐷';resetIdle()},1500);
+  }
+}
+function resetIdle(){
+  clearTimeout(idleTimer);
+  if(pigState==='sleep')return;
+  idleTimer=setTimeout(function(){
+    pigState='idle';document.getElementById('pig-status').textContent='...';
+    setTimeout(function(){
+      if(pigState==='idle'){pigState='sleepy';document.getElementById('pig-status').textContent='ง่วงแล้วนะ 😴';
+        setTimeout(function(){if(pigState==='sleepy'){pigState='sleep';document.getElementById('pig-status').textContent='Zzz... (แตะเพื่อปลุก)'}},2500)}
+    },2000);
+  },4000);
+}
+function startPigAnim(){if(!pigAnimId)pigLoop()}
+function stopPigAnim(){if(pigAnimId){cancelAnimationFrame(pigAnimId);pigAnimId=null}}
+pigC.addEventListener('click',wakeUp);
+document.getElementById('auth-email').addEventListener('focus',function(){wakeUp();resetIdle()});
+document.getElementById('auth-email').addEventListener('input',resetIdle);
+document.getElementById('auth-pw').addEventListener('focus',function(){wakeUp();resetIdle()});
+document.getElementById('auth-pw').addEventListener('input',resetIdle);
+document.getElementById('auth-email').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('auth-pw').focus()});
+document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')doAuth()});
 
+/* ===== BOOT ===== */
 var s=document.createElement('script');
 s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
-s.onload=async function(){renderCats();await loadTxs();refresh()};
+s.onload=function(){
+  renderCats();
+  startPigAnim();
+  resetIdle();
+  // check existing session
+  var stored=localStorage.getItem('sb_token');
+  var storedUser=localStorage.getItem('sb_user');
+  if(stored&&storedUser){
+    authToken=stored;curUser=JSON.parse(storedUser);
+    showApp();
+  }
+};
 document.head.appendChild(s);
+
+// persist session
+var _origDoAuth=doAuth;
+doAuth=async function(){
+  await _origDoAuth();
+  if(authToken&&curUser){localStorage.setItem('sb_token',authToken);localStorage.setItem('sb_user',JSON.stringify(curUser))}
+};
+var _origDoLogout=doLogout;
+doLogout=async function(){
+  localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');
+  await _origDoLogout();
+};
 </script>
 </body>
 </html>
