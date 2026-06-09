@@ -499,7 +499,7 @@ async function submitTx(){
       var idx=allTxs.findIndex(function(t){return t.id===editingId});
       if(idx>=0)allTxs[idx]=Object.assign(allTxs[idx],{name:name,amount:amount,date:date,type:curType,cat:cat});
     }else{
-      var tx={id:Date.now().toString(),type:curType,name:name,amount:amount,date:date,cat:cat,user_id:curUser.id};
+      var tx={id:(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString()),type:curType,name:name,amount:amount,date:date,cat:cat,user_id:curUser.id};
       await sbFetch('transactions','POST',tx);allTxs.unshift(tx);
     }
     closeM();curDate=new Date(date.replace(/-/g,'/'));curDate=new Date(curDate.getFullYear(),curDate.getMonth(),1);refresh();
