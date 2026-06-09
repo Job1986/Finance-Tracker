@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Finance Tracker">
+<meta name="apple-mobile-web-app-title" content="Piggy Piggy กระปุกหมูช่วยออม">
 <meta name="theme-color" content="#ffffff">
-<title>Finance Tracker</title>
+<title>Piggy Piggy กระปุกหมูช่วยออม</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
 <style>
 :root{--bg:#f5f5f7;--card:#fff;--border:#e5e5ea;--text:#1c1c1e;--text2:#6e6e73;--inc:#1D9E75;--exp:#D85A30;--sav:#534AB7;--r:14px;--rs:10px}
@@ -129,10 +129,10 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 <!-- ===== LOGIN PAGE ===== -->
 <div id="login-page">
   <canvas id="pig-canvas" width="200" height="200"></canvas>
-  <div class="pig-status" id="pig-status">สวัสดี! เข้าสู่ระบบเพื่อดูเงินออม 🐷</div>
+  <div class="pig-status" id="pig-status">สวัสดี! Piggy Piggy ช่วยออมให้เธอ 🐷</div>
   <div class="login-card">
-    <div class="login-title">Finance Tracker</div>
-    <div class="login-sub" id="login-sub">ยินดีต้อนรับกลับมา</div>
+    <div class="login-title">Piggy Piggy กระปุกหมูช่วยออม</div>
+    <div class="login-sub" id="login-sub">กระปุกหมู ช่วยออมให้เธอ 💕</div>
     <div class="fg"><label>อีเมล</label><input type="email" id="auth-email" placeholder="you@email.com" autocomplete="username"></div>
     <div class="fg"><label>รหัสผ่าน</label><input type="password" id="auth-pw" placeholder="••••••••" autocomplete="current-password"></div>
     <div class="fg" id="auth-pw2-wrap" style="display:none"><label>ยืนยันรหัสผ่าน</label><input type="password" id="auth-pw2" placeholder="••••••••"></div>
@@ -246,7 +246,7 @@ async function sbFetch(path,method,body){
 /* ===== AUTH MODE TOGGLE ===== */
 function toggleAuthMode(){
   isRegMode=!isRegMode;
-  document.getElementById('login-sub').textContent=isRegMode?'สร้างบัญชีใหม่':'ยินดีต้อนรับกลับมา';
+  document.getElementById('login-sub').textContent=isRegMode?'สร้างบัญชีใหม่':'ยินดีต้อนรับกลับมา 🐷';
   document.getElementById('auth-btn').textContent=isRegMode?'สมัครสมาชิก':'เข้าสู่ระบบ';
   document.getElementById('auth-pw2-wrap').style.display=isRegMode?'block':'none';
   document.getElementById('auth-toggle-txt').textContent=isRegMode?'มีบัญชีแล้ว? ':'ยังไม่มีบัญชี? ';
@@ -451,10 +451,10 @@ function pigLoop(){
 }
 function wakeUp(){
   if(pigState==='sleep'||pigState==='sleepy'||pigState==='idle'){
-    pigState='wakeup';document.getElementById('pig-status').textContent='ตื่นแล้ว! พร้อมออมเงินวันนี้ 💰';
+    pigState='wakeup';document.getElementById('pig-status').textContent='ตื่นแล้ว! มาออมเงินกันเลย 💰';
     sparks=[];zzzList=[];
     for(var i=0;i<6;i++){var a=Math.random()*Math.PI*2;sparks.push({x:100,y:60,vx:Math.cos(a)*2.5,vy:Math.sin(a)*2.5,life:1})}
-    setTimeout(function(){pigState='awake';document.getElementById('pig-status').textContent='สวัสดี! เข้าสู่ระบบเพื่อดูเงินออม 🐷';resetIdle()},1500);
+    setTimeout(function(){pigState='awake';document.getElementById('pig-status').textContent='สวัสดี! Piggy Piggy ช่วยออมให้เธอ 🐷';resetIdle()},1500);
   }
 }
 function resetIdle(){
