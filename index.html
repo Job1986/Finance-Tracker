@@ -489,6 +489,7 @@ function setT(t){curType=t;document.getElementById('bi').className='tb'+(t==='in
 function renderCats(){if(curType==='saving'){document.getElementById('cg').innerHTML='';return}var cats=curType==='income'?CI:CE;selCat=cats[0].id;document.getElementById('cg').innerHTML=cats.map(function(c){return'<button class="catb'+(c.id===selCat?' on':'')+'" data-catid="'+c.id+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>'}).join('');document.getElementById('cfg').style.display='none'}
 function selC(id,el){selCat=id;document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('cfg').style.display=id==='other'?'block':'none'}
 async function submitTx(){
+  if(!curUser||!authToken){alert('Session หมดอายุ กรุณา login ใหม่');doLogout();return;}
   var name=document.getElementById('in').value.trim();var amount=parseFloat(document.getElementById('ia').value);var date=document.getElementById('id').value;var cat=curType==='saving'?'save':selCat;
   if(cat==='other'){var cc=document.getElementById('ic').value.trim();if(cc)cat=cc}
   if(!name||!amount||!date||amount<=0){alert('กรุณากรอกข้อมูลให้ครบ');return}
