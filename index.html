@@ -33,6 +33,8 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 .login-err{font-size:13px;color:var(--exp);text-align:center;margin-top:10px;min-height:18px}
 .login-toggle{font-size:13px;color:var(--text2);text-align:center;margin-top:14px}
 .login-toggle span{color:var(--inc);cursor:pointer;font-weight:500}
+.goal-btn{padding:10px 8px;border:1px solid var(--border);border-radius:var(--rs);background:none;cursor:pointer;font-size:13px;color:var(--text);font-family:inherit;transition:all .15s;text-align:center}
+.goal-btn.on{background:#eeecfc;border-color:var(--sav);color:#3c3489;font-weight:500}
 
 /* ============ APP ============ */
 .app{max-width:430px;margin:0 auto;padding-bottom:90px;display:none}
@@ -145,6 +147,48 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
   </div>
 </div>
 
+<!-- ===== REGISTER STEP 2 ===== -->
+<div id="register-page" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;max-width:430px;margin:0 auto">
+  <div style="font-size:48px;text-align:center;margin-bottom:8px">🐷</div>
+  <div style="font-size:20px;font-weight:700;text-align:center;margin-bottom:4px">ยินดีต้อนรับ!</div>
+  <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:24px">กรอกข้อมูลเพื่อเริ่มต้นใช้งาน Piggy Piggy</div>
+  <div class="login-card">
+    <div class="fg"><label>ชื่อ *</label><input type="text" id="reg-fname" placeholder="ชื่อจริง"></div>
+    <div class="fg"><label>นามสกุล *</label><input type="text" id="reg-lname" placeholder="นามสกุล"></div>
+    <div class="fg"><label>อายุ</label><input type="number" id="reg-age" placeholder="25" min="1" max="120"></div>
+    <div class="fg"><label>อาชีพ</label>
+      <select id="reg-job" style="width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit">
+        <option value="">-- เลือกอาชีพ --</option>
+        <option>พนักงานบริษัท</option>
+        <option>ข้าราชการ/รัฐวิสาหกิจ</option>
+        <option>ธุรกิจส่วนตัว</option>
+        <option>ฟรีแลนซ์</option>
+        <option>นักเรียน/นักศึกษา</option>
+        <option>แม่บ้าน/พ่อบ้าน</option>
+        <option>เกษียณอายุ</option>
+        <option>อื่นๆ</option>
+      </select>
+    </div>
+    <div class="fg"><label>เป้าหมายการออมเงิน 🎯</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="goal-grid">
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'ซื้อบ้าน')">🏠 ซื้อบ้าน</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'ซื้อรถ')">🚗 ซื้อรถ</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'ท่องเที่ยว')">✈️ ท่องเที่ยว</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'เงินฉุกเฉิน')">🆘 เงินฉุกเฉิน</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'เกษียณอายุ')">👴 เกษียณอายุ</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'การศึกษา')">📚 การศึกษา</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'แต่งงาน')">💍 แต่งงาน</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'ลงทุน')">📈 ลงทุน</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'ซื้อของที่อยากได้')">🛍️ ช้อปปิ้ง</button>
+        <button type="button" class="goal-btn" onclick="toggleGoal(this,'อื่นๆ')">💡 อื่นๆ</button>
+      </div>
+    </div>
+    <div class="fg" id="goal-other-wrap" style="display:none"><label>ระบุเป้าหมาย</label><input type="text" id="goal-other" placeholder="เป้าหมายของคุณ..."></div>
+    <div class="login-err" id="reg-err"></div>
+    <button class="login-btn" onclick="submitProfile()">เริ่มใช้งาน Piggy Piggy 🐷</button>
+  </div>
+</div>
+
 <!-- ===== MAIN APP ===== -->
 <div class="app" id="app">
   <nav class="nav">
@@ -227,7 +271,7 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 <script>
 var SB_URL='https://ljqsgtvjyobqlrfdvpyo.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqcXNndHZqeW9icWxyZmR2cHlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTE0NjYsImV4cCI6MjA5NTcyNzQ2Nn0.mwa1nNhnH6Mh1TGDHslWYbtSVKq3yjWxBCrNeqZwrlo';
-var curUser=null, authToken=null, isRegMode=false, curRole=null;
+var curUser=null, authToken=null, isRegMode=false, curRole=null, selectedGoals=[];
 
 /* ===== SUPABASE HELPERS ===== */
 async function sbAuth(path,body){
@@ -254,6 +298,39 @@ function toggleAuthMode(){
   document.getElementById('auth-err').textContent='';
 }
 
+function toggleGoal(btn,goal){
+  btn.classList.toggle('on');
+  if(btn.classList.contains('on')){
+    if(!selectedGoals.includes(goal))selectedGoals.push(goal);
+  }else{
+    selectedGoals=selectedGoals.filter(function(g){return g!==goal});
+  }
+  document.getElementById('goal-other-wrap').style.display=selectedGoals.includes('อื่นๆ')?'block':'none';
+}
+
+async function submitProfile(){
+  var fname=document.getElementById('reg-fname').value.trim();
+  var lname=document.getElementById('reg-lname').value.trim();
+  var age=document.getElementById('reg-age').value;
+  var job=document.getElementById('reg-job').value;
+  var goals=selectedGoals.slice();
+  if(selectedGoals.includes('อื่นๆ')){
+    var other=document.getElementById('goal-other').value.trim();
+    if(other){goals=goals.filter(function(g){return g!=='อื่นๆ'});goals.push(other);}
+  }
+  if(!fname||!lname){document.getElementById('reg-err').textContent='กรุณากรอกชื่อและนามสกุล';return}
+  try{
+    await sbFetch('profiles?id=eq.'+curUser.id,'PATCH',{
+      first_name:fname,last_name:lname,
+      age:age?parseInt(age):null,
+      occupation:job,
+      savings_goals:goals.join(', ')
+    });
+  }catch(e){console.warn('profile save:',e.message)}
+  document.getElementById('register-page').style.display='none';
+  showApp();
+}
+
 async function doAuth(){
   var email=document.getElementById('auth-email').value.trim();
   var pw=document.getElementById('auth-pw').value;
@@ -269,7 +346,15 @@ async function doAuth(){
     authToken=d.access_token;
     curUser=d.user;
     wakeUp();
-    setTimeout(function(){showApp();},600);
+    if(isRegMode){
+      // go to profile step
+      setTimeout(function(){
+        document.getElementById('login-page').classList.add('hide');
+        document.getElementById('register-page').style.display='flex';
+      },600);
+    }else{
+      setTimeout(function(){showApp();},600);
+    }
   }catch(e){
     errEl.textContent=e.message==='Invalid login credentials'?'อีเมลหรือรหัสผ่านไม่ถูกต้อง':e.message;
   }
