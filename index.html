@@ -147,16 +147,13 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 
 <!-- ===== MAIN APP ===== -->
 <div class="app" id="app">
-  <div class="user-bar">
-    <span class="user-email" id="user-email-txt"></span>
-    <button class="logout-btn" onclick="doLogout()">ออกจากระบบ</button>
-  </div>
   <nav class="nav">
     <button class="nb on" onclick="showPg('dash',this)"><i class="ti ti-layout-dashboard"></i>ภาพรวม</button>
     <button class="nb" onclick="showPg('txs',this)"><i class="ti ti-list"></i>รายการ</button>
     <button class="nb" onclick="showPg('cats',this)"><i class="ti ti-chart-pie"></i>หมวดหมู่</button>
     <button class="nb" onclick="showPg('savings',this)"><i class="ti ti-piggy-bank"></i>เงินออม</button>
     <button class="nb" onclick="showPg('hist',this)"><i class="ti ti-calendar-stats"></i>ประวัติ</button>
+    <button class="nb" onclick="doLogout()" style="color:var(--exp)"><i class="ti ti-logout"></i>ออก</button>
   </nav>
   <div id="pg-dash" class="pg on">
     <div class="mbar"><button class="mbar-btn" onclick="chgM(-1)">&#8592;</button><span class="mn" id="ml1"></span><button class="mbar-btn" onclick="chgM(1)">&#8594;</button></div>
@@ -230,7 +227,7 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 <script>
 var SB_URL='https://ljqsgtvjyobqlrfdvpyo.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqcXNndHZqeW9icWxyZmR2cHlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTE0NjYsImV4cCI6MjA5NTcyNzQ2Nn0.mwa1nNhnH6Mh1TGDHslWYbtSVKq3yjWxBCrNeqZwrlo';
-var curUser=null, authToken=null, isRegMode=false;
+var curUser=null, authToken=null, isRegMode=false, curRole=null;
 
 /* ===== SUPABASE HELPERS ===== */
 async function sbAuth(path,body){
@@ -279,18 +276,36 @@ async function doAuth(){
   btn.disabled=false;btn.textContent=isRegMode?'สมัครสมาชิก':'เข้าสู่ระบบ';
 }
 
-function showApp(){
+async function showApp(){
+  // fetch role from profiles
+  try{
+    var prof=await sbFetch('profiles?id=eq.'+curUser.id+'&select=role,email','GET');
+    if(prof&&prof.length){curRole=prof[0].role;}
+    else{curRole='user';}
+  }catch(e){curRole='user';}
+
+  if(curRole!=='admin'&&curRole!=='user'){
+    document.getElementById('auth-err').textContent='บัญชีนี้ไม่มีสิทธิ์เข้าใช้งาน';
+    authToken=null;curUser=null;
+    localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');
+    return;
+  }
+
   document.getElementById('login-page').classList.add('hide');
   document.getElementById('app').classList.add('show');
   document.getElementById('fab').style.display='flex';
-  document.getElementById('user-email-txt').textContent=curUser.email;
+
+  // show role badge
+  var badge=curRole==='admin'?'<span style="background:#534AB7;color:#fff;font-size:10px;padding:2px 7px;border-radius:999px;margin-left:6px">Admin</span>':'';
+  document.getElementById('user-email-txt').innerHTML=(curUser.email||'')+badge;
+
   stopPigAnim();
   loadTxs().then(function(){refresh()});
 }
 
 async function doLogout(){
   try{await sbAuth('logout',{})}catch(e){}
-  authToken=null;curUser=null;allTxs=[];
+  authToken=null;curUser=null;curRole=null;allTxs=[];
   document.getElementById('login-page').classList.remove('hide');
   document.getElementById('app').classList.remove('show');
   document.getElementById('fab').style.display='none';
@@ -470,12 +485,17 @@ s.onload=function(){
   renderCats();
   startPigAnim();
   resetIdle();
-  // check existing session
+  // verify existing session
   var stored=localStorage.getItem('sb_token');
-  var storedUser=localStorage.getItem('sb_user');
-  if(stored&&storedUser){
-    authToken=stored;curUser=JSON.parse(storedUser);
-    showApp();
+  if(stored){
+    authToken=stored;
+    fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+stored}})
+      .then(function(r){return r.json()})
+      .then(function(d){
+        if(d&&d.id){curUser=d;showApp();}
+        else{localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');authToken=null;}
+      })
+      .catch(function(){localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');authToken=null;});
   }
 };
 document.head.appendChild(s);
