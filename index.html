@@ -139,16 +139,16 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
     <div class="fg"><label>รหัสผ่าน</label>
       <div style="position:relative">
         <input type="password" id="auth-pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px">
-        <button type="button" onclick="togglePw('auth-pw','eye1')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;display:flex;align-items:center">
-          <i class="ti ti-eye" id="eye1" style="font-size:18px"></i>
+        <button type="button" onclick="togglePw('auth-pw','eye1')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;font-size:18px;line-height:1">
+          <span id="eye1">👁️</span>
         </button>
       </div>
     </div>
     <div class="fg" id="auth-pw2-wrap" style="display:none"><label>ยืนยันรหัสผ่าน</label>
       <div style="position:relative">
         <input type="password" id="auth-pw2" placeholder="••••••••" style="padding-right:44px">
-        <button type="button" onclick="togglePw('auth-pw2','eye2')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;display:flex;align-items:center">
-          <i class="ti ti-eye" id="eye2" style="font-size:18px"></i>
+        <button type="button" onclick="togglePw('auth-pw2','eye2')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;font-size:18px;line-height:1">
+          <span id="eye2">👁️</span>
         </button>
       </div>
     </div>
@@ -307,10 +307,10 @@ function togglePw(inputId,iconId){
   var ico=document.getElementById(iconId);
   if(inp.type==='password'){
     inp.type='text';
-    ico.className='ti ti-eye-off';
+    ico.textContent='🙈';
   }else{
     inp.type='password';
-    ico.className='ti ti-eye';
+    ico.textContent='👁️';
   }
 }
 function toggleAuthMode(){
