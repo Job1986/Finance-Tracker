@@ -136,8 +136,22 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
     <div class="login-title">Piggy Piggy กระปุกหมูช่วยออม</div>
     <div class="login-sub" id="login-sub">กระปุกหมู ช่วยออมให้เธอ 💕</div>
     <div class="fg"><label>อีเมล</label><input type="email" id="auth-email" placeholder="you@email.com" autocomplete="username"></div>
-    <div class="fg"><label>รหัสผ่าน</label><input type="password" id="auth-pw" placeholder="••••••••" autocomplete="current-password"></div>
-    <div class="fg" id="auth-pw2-wrap" style="display:none"><label>ยืนยันรหัสผ่าน</label><input type="password" id="auth-pw2" placeholder="••••••••"></div>
+    <div class="fg"><label>รหัสผ่าน</label>
+      <div style="position:relative">
+        <input type="password" id="auth-pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px">
+        <button type="button" onclick="togglePw('auth-pw','eye1')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;display:flex;align-items:center">
+          <i class="ti ti-eye" id="eye1" style="font-size:18px"></i>
+        </button>
+      </div>
+    </div>
+    <div class="fg" id="auth-pw2-wrap" style="display:none"><label>ยืนยันรหัสผ่าน</label>
+      <div style="position:relative">
+        <input type="password" id="auth-pw2" placeholder="••••••••" style="padding-right:44px">
+        <button type="button" onclick="togglePw('auth-pw2','eye2')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;display:flex;align-items:center">
+          <i class="ti ti-eye" id="eye2" style="font-size:18px"></i>
+        </button>
+      </div>
+    </div>
     <button class="login-btn" id="auth-btn" onclick="doAuth()">เข้าสู่ระบบ</button>
     <div class="login-err" id="auth-err"></div>
     <div class="login-toggle">
@@ -288,6 +302,17 @@ async function sbFetch(path,method,body){
 }
 
 /* ===== AUTH MODE TOGGLE ===== */
+function togglePw(inputId,iconId){
+  var inp=document.getElementById(inputId);
+  var ico=document.getElementById(iconId);
+  if(inp.type==='password'){
+    inp.type='text';
+    ico.className='ti ti-eye-off';
+  }else{
+    inp.type='password';
+    ico.className='ti ti-eye';
+  }
+}
 function toggleAuthMode(){
   isRegMode=!isRegMode;
   document.getElementById('login-sub').textContent=isRegMode?'สร้างบัญชีใหม่':'ยินดีต้อนรับกลับมา 🐷';
