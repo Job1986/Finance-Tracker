@@ -275,7 +275,7 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
     </div>
     <div class="fg2"><label>ชื่อรายการ</label><input type="text" id="in" placeholder="เช่น ข้าวกะเพรา, 7-Eleven"></div>
     <div class="fg2"><label>จำนวนเงิน (฿)</label><input type="number" id="ia" placeholder="0.00" min="0" step="0.01"></div>
-    <div class="fg2"><label>วันที่</label><input type="date" id="id"></div>
+    <div class="fg2"><label>วันที่</label><input type="date" id="id" min="2020-01-01" max="2099-12-31"></div>
     <div class="fg2" id="cat-section"><label>หมวดหมู่</label><div class="cg" id="cg"></div></div>
     <div class="fg2" id="cfg" style="display:none"><label>ระบุหมวดหมู่</label><input type="text" id="ic" placeholder="พิมพ์หมวดหมู่"></div>
     <button class="sub" id="submitBtn" onclick="submitTx()">บันทึกรายการ</button>
@@ -590,6 +590,21 @@ document.getElementById('auth-email').addEventListener('keydown',function(e){if(
 document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')doAuth()});
 
 /* ===== BOOT ===== */
+// Android: re-verify token เมื่อกลับมาใช้แอพ
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'&&authToken&&curUser){
+    fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+authToken}})
+      .then(function(r){return r.json()})
+      .then(function(d){
+        if(!d||!d.id){
+          alert('Session หมดอายุ กรุณา login ใหม่');
+          doLogout();
+        }
+      })
+      .catch(function(){});
+  }
+});
+
 var s=document.createElement('script');
 s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
 s.onload=function(){
