@@ -132,13 +132,13 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 <div id="login-page">
   <canvas id="pig-canvas" width="200" height="200"></canvas>
   <div class="pig-status" id="pig-status">สวัสดี! Piggy Piggy ช่วยออมให้เธอ 🐷</div>
-  <div class="login-card">
+  <form class="login-card" id="auth-form" autocomplete="on">
     <div class="login-title">Piggy Piggy กระปุกหมูช่วยออม</div>
     <div class="login-sub" id="login-sub">กระปุกหมู ช่วยออมให้เธอ 💕</div>
-    <div class="fg"><label>อีเมล</label><input type="email" id="auth-email" placeholder="you@email.com" autocomplete="username"></div>
+    <div class="fg"><label>อีเมล</label><input type="email" id="auth-email" name="email" placeholder="you@email.com" autocomplete="username"></div>
     <div class="fg"><label>รหัสผ่าน</label>
       <div style="position:relative">
-        <input type="password" id="auth-pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px">
+        <input type="password" id="auth-pw" name="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px">
         <button type="button" onclick="togglePw('auth-pw','eye1')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;font-size:18px;line-height:1">
           <span id="eye1">👁️</span>
         </button>
@@ -146,19 +146,19 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
     </div>
     <div class="fg" id="auth-pw2-wrap" style="display:none"><label>ยืนยันรหัสผ่าน</label>
       <div style="position:relative">
-        <input type="password" id="auth-pw2" placeholder="••••••••" style="padding-right:44px">
+        <input type="password" id="auth-pw2" name="confirm_password" placeholder="••••••••" autocomplete="new-password" style="padding-right:44px">
         <button type="button" onclick="togglePw('auth-pw2','eye2')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;font-size:18px;line-height:1">
           <span id="eye2">👁️</span>
         </button>
       </div>
     </div>
-    <button class="login-btn" id="auth-btn" onclick="doAuth()">เข้าสู่ระบบ</button>
+    <button class="login-btn" id="auth-btn" type="submit">เข้าสู่ระบบ</button>
     <div class="login-err" id="auth-err"></div>
     <div class="login-toggle">
       <span id="auth-toggle-txt">ยังไม่มีบัญชี? </span>
       <span onclick="toggleAuthMode()">สมัครสมาชิก</span>
     </div>
-  </div>
+  </form>
 </div>
 
 <!-- ===== REGISTER STEP 2 ===== -->
@@ -285,18 +285,52 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 <script>
 var SB_URL='https://ljqsgtvjyobqlrfdvpyo.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqcXNndHZqeW9icWxyZmR2cHlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTE0NjYsImV4cCI6MjA5NTcyNzQ2Nn0.mwa1nNhnH6Mh1TGDHslWYbtSVKq3yjWxBCrNeqZwrlo';
-var curUser=null, authToken=null, isRegMode=false, curRole=null, selectedGoals=[];
+var curUser=null, authToken=null, refreshToken=null, isRegMode=false, curRole=null, selectedGoals=[];
 
 /* ===== SUPABASE HELPERS ===== */
 async function sbAuth(path,body){
   var res=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
   var d=await res.json();if(d.error)throw new Error(d.error.message||d.msg||'Auth error');return d;
 }
-async function sbFetch(path,method,body){
+async function refreshSession(){
+  var rt=refreshToken||localStorage.getItem('sb_refresh');
+  if(!rt)return false;
+  try{
+    var d=await sbAuth('token?grant_type=refresh_token',{refresh_token:rt});
+    if(d&&d.access_token){
+      authToken=d.access_token;
+      refreshToken=d.refresh_token||rt;
+      if(d.user)curUser=d.user;
+      localStorage.setItem('sb_token',authToken);
+      localStorage.setItem('sb_refresh',refreshToken);
+      if(curUser)localStorage.setItem('sb_user',JSON.stringify(curUser));
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+async function ensureSession(){
+  if(curUser&&authToken)return true;
+  var stored=localStorage.getItem('sb_token');
+  if(stored){
+    authToken=stored;
+    try{
+      var r=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+stored}});
+      var d=await r.json();
+      if(d&&d.id){curUser=d;return true}
+    }catch(e){}
+  }
+  return await refreshSession();
+}
+async function sbFetch(path,method,body,_retry){
   var headers={'apikey':SB_KEY,'Authorization':'Bearer '+(authToken||SB_KEY),'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''};
   var opts={method:method||'GET',headers:headers};
   if(body)opts.body=JSON.stringify(body);
   var res=await fetch(SB_URL+'/rest/v1/'+path,opts);
+  if(res.status===401&&!_retry){
+    var ok=await refreshSession();
+    if(ok)return sbFetch(path,method,body,true);
+  }
   if(!res.ok){var e=await res.text();throw new Error(e)}
   var txt=await res.text();return txt?JSON.parse(txt):[];
 }
@@ -318,6 +352,7 @@ function toggleAuthMode(){
   document.getElementById('login-sub').textContent=isRegMode?'สร้างบัญชีใหม่':'ยินดีต้อนรับกลับมา 🐷';
   document.getElementById('auth-btn').textContent=isRegMode?'สมัครสมาชิก':'เข้าสู่ระบบ';
   document.getElementById('auth-pw2-wrap').style.display=isRegMode?'block':'none';
+  document.getElementById('auth-pw').setAttribute('autocomplete',isRegMode?'new-password':'current-password');
   document.getElementById('auth-toggle-txt').textContent=isRegMode?'มีบัญชีแล้ว? ':'ยังไม่มีบัญชี? ';
   document.querySelector('#auth-toggle-txt+span').textContent=isRegMode?'เข้าสู่ระบบ':'สมัครสมาชิก';
   document.getElementById('auth-err').textContent='';
@@ -369,6 +404,7 @@ async function doAuth(){
   try{
     var d=await sbAuth(isRegMode?'signup':'token?grant_type=password',{email,password:pw});
     authToken=d.access_token;
+    refreshToken=d.refresh_token;
     curUser=d.user;
     wakeUp();
     if(isRegMode){
@@ -415,7 +451,7 @@ async function showApp(){
 
 async function doLogout(){
   try{await sbAuth('logout',{})}catch(e){}
-  authToken=null;curUser=null;curRole=null;allTxs=[];
+  authToken=null;curUser=null;refreshToken=null;curRole=null;allTxs=[];
   document.getElementById('login-page').classList.remove('hide');
   document.getElementById('app').classList.remove('show');
   document.getElementById('fab').style.display='none';
@@ -489,7 +525,8 @@ function setT(t){curType=t;document.getElementById('bi').className='tb'+(t==='in
 function renderCats(){if(curType==='saving'){document.getElementById('cg').innerHTML='';return}var cats=curType==='income'?CI:CE;selCat=cats[0].id;document.getElementById('cg').innerHTML=cats.map(function(c){return'<button class="catb'+(c.id===selCat?' on':'')+'" data-catid="'+c.id+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>'}).join('');document.getElementById('cfg').style.display='none'}
 function selC(id,el){selCat=id;document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('cfg').style.display=id==='other'?'block':'none'}
 async function submitTx(){
-  if(!curUser||!authToken){alert('Session หมดอายุ กรุณา login ใหม่');doLogout();return;}
+  var sessOk=await ensureSession();
+  if(!sessOk){alert('Session หมดอายุ กรุณา login ใหม่');doLogout();return;}
   var name=document.getElementById('in').value.trim();var amount=parseFloat(document.getElementById('ia').value);var date=document.getElementById('id').value;var cat=curType==='saving'?'save':selCat;
   if(cat==='other'){var cc=document.getElementById('ic').value.trim();if(cc)cat=cc}
   if(!name||!amount||!date||amount<=0){alert('กรุณากรอกข้อมูลให้ครบ');return}
@@ -586,8 +623,8 @@ document.getElementById('auth-email').addEventListener('focus',function(){wakeUp
 document.getElementById('auth-email').addEventListener('input',resetIdle);
 document.getElementById('auth-pw').addEventListener('focus',function(){wakeUp();resetIdle()});
 document.getElementById('auth-pw').addEventListener('input',resetIdle);
-document.getElementById('auth-email').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('auth-pw').focus()});
-document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')doAuth()});
+document.getElementById('auth-email').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('auth-pw').focus()}});
+document.getElementById('auth-form').addEventListener('submit',function(e){e.preventDefault();doAuth()});
 
 /* ===== BOOT ===== */
 // Android: re-verify token เมื่อกลับมาใช้แอพ
@@ -597,8 +634,9 @@ document.addEventListener('visibilitychange',function(){
       .then(function(r){return r.json()})
       .then(function(d){
         if(!d||!d.id){
-          alert('Session หมดอายุ กรุณา login ใหม่');
-          doLogout();
+          refreshSession().then(function(ok){
+            if(!ok){alert('Session หมดอายุ กรุณา login ใหม่');doLogout();}
+          });
         }
       })
       .catch(function(){});
@@ -619,9 +657,19 @@ s.onload=function(){
       .then(function(r){return r.json()})
       .then(function(d){
         if(d&&d.id){curUser=d;showApp();}
-        else{localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');authToken=null;}
+        else{
+          refreshSession().then(function(ok){
+            if(ok)showApp();
+            else{localStorage.removeItem('sb_token');localStorage.removeItem('sb_refresh');localStorage.removeItem('sb_user');authToken=null;}
+          });
+        }
       })
-      .catch(function(){localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');authToken=null;});
+      .catch(function(){
+        refreshSession().then(function(ok){
+          if(ok)showApp();
+          else{localStorage.removeItem('sb_token');localStorage.removeItem('sb_refresh');localStorage.removeItem('sb_user');authToken=null;}
+        });
+      });
   }
 };
 document.head.appendChild(s);
@@ -630,11 +678,11 @@ document.head.appendChild(s);
 var _origDoAuth=doAuth;
 doAuth=async function(){
   await _origDoAuth();
-  if(authToken&&curUser){localStorage.setItem('sb_token',authToken);localStorage.setItem('sb_user',JSON.stringify(curUser))}
+  if(authToken&&curUser){localStorage.setItem('sb_token',authToken);localStorage.setItem('sb_user',JSON.stringify(curUser));if(refreshToken)localStorage.setItem('sb_refresh',refreshToken)}
 };
 var _origDoLogout=doLogout;
 doLogout=async function(){
-  localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');
+  localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');localStorage.removeItem('sb_refresh');
   await _origDoLogout();
 };
 </script>
