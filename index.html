@@ -406,6 +406,12 @@ async function doAuth(){
     authToken=d.access_token;
     refreshToken=d.refresh_token;
     curUser=d.user;
+    if(window.PasswordCredential){
+      try{
+        var cred=new PasswordCredential({id:email,password:pw,name:email});
+        navigator.credentials.store(cred);
+      }catch(ce){}
+    }
     wakeUp();
     if(isRegMode){
       // go to profile step
