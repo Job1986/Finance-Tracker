@@ -292,22 +292,31 @@ async function sbAuth(path,body){
   var res=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
   var d=await res.json();if(d.error)throw new Error(d.error.message||d.msg||'Auth error');return d;
 }
+var _refreshInFlight=null;
 async function refreshSession(){
-  var rt=refreshToken||localStorage.getItem('sb_refresh');
-  if(!rt)return false;
+  if(_refreshInFlight)return _refreshInFlight;
+  _refreshInFlight=(async function(){
+    var rt=refreshToken||localStorage.getItem('sb_refresh');
+    if(!rt)return false;
+    try{
+      var d=await sbAuth('token?grant_type=refresh_token',{refresh_token:rt});
+      if(d&&d.access_token){
+        authToken=d.access_token;
+        refreshToken=d.refresh_token||rt;
+        if(d.user)curUser=d.user;
+        localStorage.setItem('sb_token',authToken);
+        localStorage.setItem('sb_refresh',refreshToken);
+        if(curUser)localStorage.setItem('sb_user',JSON.stringify(curUser));
+        return true;
+      }
+    }catch(e){}
+    return false;
+  })();
   try{
-    var d=await sbAuth('token?grant_type=refresh_token',{refresh_token:rt});
-    if(d&&d.access_token){
-      authToken=d.access_token;
-      refreshToken=d.refresh_token||rt;
-      if(d.user)curUser=d.user;
-      localStorage.setItem('sb_token',authToken);
-      localStorage.setItem('sb_refresh',refreshToken);
-      if(curUser)localStorage.setItem('sb_user',JSON.stringify(curUser));
-      return true;
-    }
-  }catch(e){}
-  return false;
+    return await _refreshInFlight;
+  }finally{
+    _refreshInFlight=null;
+  }
 }
 async function ensureSession(){
   if(curUser&&authToken)return true;
