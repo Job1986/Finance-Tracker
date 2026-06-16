@@ -309,7 +309,7 @@ async function refreshSession(){
         if(curUser)localStorage.setItem('sb_user',JSON.stringify(curUser));
         return true;
       }
-    }catch(e){}
+    }catch(e){console.warn('refresh failed:',e.message);}
     return false;
   })();
   try{
@@ -348,13 +348,8 @@ async function sbFetch(path,method,body,_retry){
 function togglePw(inputId,iconId){
   var inp=document.getElementById(inputId);
   var ico=document.getElementById(iconId);
-  if(inp.type==='password'){
-    inp.type='text';
-    ico.textContent='🙈';
-  }else{
-    inp.type='password';
-    ico.textContent='👁️';
-  }
+  if(inp.type==='password'){inp.type='text';ico.textContent='🙈';}
+  else{inp.type='password';ico.textContent='👁️';}
 }
 function toggleAuthMode(){
   isRegMode=!isRegMode;
@@ -369,11 +364,8 @@ function toggleAuthMode(){
 
 function toggleGoal(btn,goal){
   btn.classList.toggle('on');
-  if(btn.classList.contains('on')){
-    if(!selectedGoals.includes(goal))selectedGoals.push(goal);
-  }else{
-    selectedGoals=selectedGoals.filter(function(g){return g!==goal});
-  }
+  if(btn.classList.contains('on')){if(!selectedGoals.includes(goal))selectedGoals.push(goal);}
+  else{selectedGoals=selectedGoals.filter(function(g){return g!==goal})}
   document.getElementById('goal-other-wrap').style.display=selectedGoals.includes('อื่นๆ')?'block':'none';
 }
 
@@ -416,14 +408,10 @@ async function doAuth(){
     refreshToken=d.refresh_token;
     curUser=d.user;
     if(window.PasswordCredential){
-      try{
-        var cred=new PasswordCredential({id:email,password:pw,name:email});
-        navigator.credentials.store(cred);
-      }catch(ce){}
+      try{var cred=new PasswordCredential({id:email,password:pw,name:email});navigator.credentials.store(cred);}catch(ce){}
     }
     wakeUp();
     if(isRegMode){
-      // go to profile step
       setTimeout(function(){
         document.getElementById('login-page').classList.add('hide');
         document.getElementById('register-page').style.display='flex';
@@ -438,7 +426,6 @@ async function doAuth(){
 }
 
 async function showApp(){
-  // fetch role from profiles
   try{
     var prof=await sbFetch('profiles?id=eq.'+curUser.id+'&select=role,email','GET');
     if(prof&&prof.length){curRole=prof[0].role;}
@@ -456,7 +443,6 @@ async function showApp(){
   document.getElementById('app').classList.add('show');
   document.getElementById('fab').style.display='flex';
 
-  // show role badge
   var badge=curRole==='admin'?'<span style="background:#534AB7;color:#fff;font-size:10px;padding:2px 7px;border-radius:999px;margin-left:6px">Admin</span>':'';
   document.getElementById('user-email-txt').innerHTML=(curUser.email||'')+badge;
 
@@ -467,6 +453,7 @@ async function showApp(){
 async function doLogout(){
   try{await sbAuth('logout',{})}catch(e){}
   authToken=null;curUser=null;refreshToken=null;curRole=null;allTxs=[];
+  localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');localStorage.removeItem('sb_refresh');
   document.getElementById('login-page').classList.remove('hide');
   document.getElementById('app').classList.remove('show');
   document.getElementById('fab').style.display='none';
@@ -539,9 +526,21 @@ function closeM(){document.getElementById('modal').classList.remove('on');editin
 function setT(t){curType=t;document.getElementById('bi').className='tb'+(t==='income'?' ai':'');document.getElementById('be').className='tb'+(t==='expense'?' ae':'');document.getElementById('bs').className='tb'+(t==='saving'?' as':'');renderCats();document.getElementById('cat-section').style.display=t==='saving'?'none':'block';if(t==='saving')selCat='save'}
 function renderCats(){if(curType==='saving'){document.getElementById('cg').innerHTML='';return}var cats=curType==='income'?CI:CE;selCat=cats[0].id;document.getElementById('cg').innerHTML=cats.map(function(c){return'<button class="catb'+(c.id===selCat?' on':'')+'" data-catid="'+c.id+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>'}).join('');document.getElementById('cfg').style.display='none'}
 function selC(id,el){selCat=id;document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('cfg').style.display=id==='other'?'block':'none'}
+
+/* ===== FIX: submitTx — silent refresh, no force-logout ===== */
 async function submitTx(){
+  // ลอง refresh token ก่อนบันทึกเสมอ เพื่อแก้ปัญหา session หมดหลังถ่ายรูป
   var sessOk=await ensureSession();
-  if(!sessOk){alert('Session หมดอายุ กรุณา login ใหม่');doLogout();return;}
+  if(!sessOk){
+    // ensureSession ล้มเหลว ลอง refresh อีกครั้ง
+    sessOk=await refreshSession();
+  }
+  if(!sessOk){
+    // ยังไม่ได้จริงๆ ค่อย logout
+    alert('Session หมดอายุ กรุณา login ใหม่');
+    doLogout();
+    return;
+  }
   var name=document.getElementById('in').value.trim();var amount=parseFloat(document.getElementById('ia').value);var date=document.getElementById('id').value;var cat=curType==='saving'?'save':selCat;
   if(cat==='other'){var cc=document.getElementById('ic').value.trim();if(cc)cat=cc}
   if(!name||!amount||!date||amount<=0){alert('กรุณากรอกข้อมูลให้ครบ');return}
@@ -556,13 +555,58 @@ async function submitTx(){
       await sbFetch('transactions','POST',tx);allTxs.unshift(tx);
     }
     closeM();curDate=new Date(date.replace(/-/g,'/'));curDate=new Date(curDate.getFullYear(),curDate.getMonth(),1);refresh();
-  }catch(e){alert('บันทึกไม่สำเร็จ: '+e.message)}
+  }catch(e){
+    // ถ้า error เป็น 401 ลอง refresh แล้ว retry อีกครั้ง
+    if(e.message&&e.message.indexOf('401')>=0){
+      var retryOk=await refreshSession();
+      if(retryOk){
+        try{
+          if(editingId){
+            await sbFetch('transactions?id=eq.'+editingId,'PATCH',{name:name,amount:amount,date:date,type:curType,cat:cat});
+            var idx2=allTxs.findIndex(function(t){return t.id===editingId});
+            if(idx2>=0)allTxs[idx2]=Object.assign(allTxs[idx2],{name:name,amount:amount,date:date,type:curType,cat:cat});
+          }else{
+            var tx2={id:(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString()),type:curType,name:name,amount:amount,date:date,cat:cat,user_id:curUser.id};
+            await sbFetch('transactions','POST',tx2);allTxs.unshift(tx2);
+          }
+          closeM();curDate=new Date(date.replace(/-/g,'/'));curDate=new Date(curDate.getFullYear(),curDate.getMonth(),1);refresh();
+          showLov(false);return;
+        }catch(e2){alert('บันทึกไม่สำเร็จ: '+e2.message)}
+      }else{
+        alert('Session หมดอายุ กรุณา login ใหม่');doLogout();
+      }
+    }else{
+      alert('บันทึกไม่สำเร็จ: '+e.message);
+    }
+  }
   showLov(false);
 }
+
 async function delTx(id){if(!confirm('ลบรายการนี้?'))return;showLov(true);try{await sbFetch('transactions?id=eq.'+id,'DELETE');allTxs=allTxs.filter(function(t){return t.id!==id});refresh()}catch(e){alert('ลบไม่สำเร็จ: '+e.message)}showLov(false)}
 function extractAmount(text){var patterns=[/(?:total|รวม|ยอดรวม|สุทธิ|grand\s*total)[^\d]*(\d[\d,]*\.?\d*)/gi,/(\d[\d,]*\.\d{2})/gi,/(?:฿|thb)\s*(\d[\d,]*\.?\d*)/gi];var found=[];for(var i=0;i<patterns.length;i++){var m;var re=patterns[i];re.lastIndex=0;while((m=re.exec(text))!==null){var n=parseFloat(m[1].replace(/,/g,''));if(n>0&&n<1000000)found.push(n)}if(i===0&&found.length>0)break}if(!found.length)return null;return found.sort(function(a,b){return b-a})[0]}
 function extractName(text){var lines=text.split('\n').map(function(l){return l.trim()}).filter(function(l){return l.length>2});for(var i=0;i<Math.min(5,lines.length);i++){if(!/^[\d\s\.,\-\/\*]+$/.test(lines[i])&&lines[i].length>2)return lines[i].substring(0,40)}return lines[0]?lines[0].substring(0,40):''}
-async function doScan(e){var file=e.target.files[0];if(!file)return;var ss=document.getElementById('ss');var prog=document.getElementById('ocrProg');var progBar=document.getElementById('ocrBar');var progTxt=document.getElementById('ocrTxt');ss.className='ss';ss.textContent='';prog.style.display='block';progBar.style.width='5%';progTxt.textContent='กำลังโหลด Tesseract OCR...';try{if(!window.Tesseract){await new Promise(function(res,rej){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}progBar.style.width='20%';progTxt.textContent='กำลังวิเคราะห์รูปภาพ...';var result=await Tesseract.recognize(file,'tha+eng',{logger:function(m){if(m.status==='recognizing text'){progBar.style.width=(20+Math.round(m.progress*70))+'%';progTxt.textContent='กำลังอ่านตัวอักษร... '+Math.round(m.progress*100)+'%'}}});progBar.style.width='100%';progTxt.textContent='เสร็จแล้ว!';var text=result.data.text;var amount=extractAmount(text);var name=extractName(text);if(name)document.getElementById('in').value=name;if(amount)document.getElementById('ia').value=amount;setT('expense');setTimeout(function(){prog.style.display='none'},500);if(name||amount){ss.className='ss ok';ss.innerHTML='<i class="ti ti-check"></i> อ่านสำเร็จ'+(name?' ชื่อ: <strong>'+name+'</strong>':'')+(amount?' ฿'+amount:'')+'<br><small style="opacity:.7">ตรวจสอบและแก้ไขได้ก่อนบันทึก</small>'}else{ss.className='ss er';ss.textContent='อ่านตัวเลขไม่ได้ กรุณากรอกเอง'}}catch(err){prog.style.display='none';ss.className='ss er';ss.textContent='เกิดข้อผิดพลาด: '+err.message}}
+
+/* ===== FIX: doScan — refresh token ก่อน OCR เสมอ ===== */
+async function doScan(e){
+  var file=e.target.files[0];if(!file)return;
+  // refresh token ก่อนเพื่อแก้ปัญหา session หมดหลังเปิดกล้อง
+  await refreshSession().catch(function(){});
+  var ss=document.getElementById('ss');var prog=document.getElementById('ocrProg');var progBar=document.getElementById('ocrBar');var progTxt=document.getElementById('ocrTxt');
+  ss.className='ss';ss.textContent='';prog.style.display='block';progBar.style.width='5%';progTxt.textContent='กำลังโหลด Tesseract OCR...';
+  try{
+    if(!window.Tesseract){await new Promise(function(res,rej){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+    progBar.style.width='20%';progTxt.textContent='กำลังวิเคราะห์รูปภาพ...';
+    var result=await Tesseract.recognize(file,'tha+eng',{logger:function(m){if(m.status==='recognizing text'){progBar.style.width=(20+Math.round(m.progress*70))+'%';progTxt.textContent='กำลังอ่านตัวอักษร... '+Math.round(m.progress*100)+'%'}}});
+    progBar.style.width='100%';progTxt.textContent='เสร็จแล้ว!';
+    var text=result.data.text;var amount=extractAmount(text);var name=extractName(text);
+    if(name)document.getElementById('in').value=name;
+    if(amount)document.getElementById('ia').value=amount;
+    setT('expense');
+    setTimeout(function(){prog.style.display='none'},500);
+    if(name||amount){ss.className='ss ok';ss.innerHTML='<i class="ti ti-check"></i> อ่านสำเร็จ'+(name?' ชื่อ: <strong>'+name+'</strong>':'')+(amount?' ฿'+amount:'')+'<br><small style="opacity:.7">ตรวจสอบและแก้ไขได้ก่อนบันทึก</small>'}
+    else{ss.className='ss er';ss.textContent='อ่านตัวเลขไม่ได้ กรุณากรอกเอง'}
+  }catch(err){prog.style.display='none';ss.className='ss er';ss.textContent='เกิดข้อผิดพลาด: '+err.message}
+}
 
 /* ===== PIXEL PIG ANIMATION ===== */
 var pigC=document.getElementById('pig-canvas');
@@ -642,20 +686,16 @@ document.getElementById('auth-email').addEventListener('keydown',function(e){if(
 document.getElementById('auth-form').addEventListener('submit',function(e){e.preventDefault();doAuth()});
 
 /* ===== BOOT ===== */
-// Android: re-verify token เมื่อกลับมาใช้แอพ
+
+/* FIX: visibilitychange — refresh token ทันทีเมื่อกลับมาจากกล้อง/app อื่น
+   ไม่ต้องรอให้ user กด submit แล้วค่อยเจอ error */
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'&&authToken&&curUser){
-    fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+authToken}})
-      .then(function(r){
-        if(r.status===401||r.status===403){
-          // token actually invalid -> refresh silently in background
-          // never force-logout here: a transient network blip while
-          // switching apps (e.g. taking a photo for OCR) must not
-          // wipe the session / refresh token mid-task.
-          refreshSession();
-        }
-      })
-      .catch(function(){});
+  if(document.visibilityState==='visible'){
+    // refresh เสมอถ้ามี refresh token ไม่ว่าจะ login อยู่หรือไม่
+    var rt=refreshToken||localStorage.getItem('sb_refresh');
+    if(rt){
+      refreshSession().catch(function(){});
+    }
   }
 });
 
@@ -665,7 +705,6 @@ s.onload=function(){
   renderCats();
   startPigAnim();
   resetIdle();
-  // verify existing session
   var stored=localStorage.getItem('sb_token');
   if(stored){
     authToken=stored;
@@ -695,11 +734,6 @@ var _origDoAuth=doAuth;
 doAuth=async function(){
   await _origDoAuth();
   if(authToken&&curUser){localStorage.setItem('sb_token',authToken);localStorage.setItem('sb_user',JSON.stringify(curUser));if(refreshToken)localStorage.setItem('sb_refresh',refreshToken)}
-};
-var _origDoLogout=doLogout;
-doLogout=async function(){
-  localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');localStorage.removeItem('sb_refresh');
-  await _origDoLogout();
 };
 </script>
 </body>
