@@ -266,7 +266,7 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
       <button class="tb" id="bs" onclick="setT('saving')" style="grid-column:span 2"><i class="ti ti-piggy-bank"></i> ฝากเงินออม</button>
     </div>
     <div id="ocr-section">
-      <div class="sb"><input type="file" accept="image/*" id="rf" onchange="doScan(event)"><i class="ti ti-camera"></i><p>แตะเพื่ออัพโหลดใบเสร็จ / ถ่ายรูป<br><small style="opacity:.6">Tesseract OCR — ประมวลผลบนเครื่อง ปลอดภัย 100%</small></p></div>
+      <div class="sb"><input type="file" accept="image/*" id="rf" onchange="doScan(event)"><i class="ti ti-camera"></i><p>แตะเพื่ออัพโหลดใบเสร็จ / ถ่ายรูป<br><small style="opacity:.6">Gemini AI อ่านใบเสร็จอัตโนมัติ ✨</small></p></div>
       <div class="ss" id="ss"></div>
       <div id="ocrProg" style="display:none;margin-bottom:14px">
         <div style="font-size:12px;color:var(--text2);margin-bottom:4px" id="ocrTxt">กำลังโหลด OCR...</div>
@@ -601,36 +601,72 @@ async function submitTx(){
 }
 
 async function delTx(id){if(!confirm('ลบรายการนี้?'))return;showLov(true);try{await sbFetch('transactions?id=eq.'+id,'DELETE');allTxs=allTxs.filter(function(t){return t.id!==id});refresh()}catch(e){alert('ลบไม่สำเร็จ: '+e.message)}showLov(false)}
-function extractAmount(text){var patterns=[/(?:total|รวม|ยอดรวม|สุทธิ|grand\s*total)[^\d]*(\d[\d,]*\.?\d*)/gi,/(\d[\d,]*\.\d{2})/gi,/(?:฿|thb)\s*(\d[\d,]*\.?\d*)/gi];var found=[];for(var i=0;i<patterns.length;i++){var m;var re=patterns[i];re.lastIndex=0;while((m=re.exec(text))!==null){var n=parseFloat(m[1].replace(/,/g,''));if(n>0&&n<1000000)found.push(n)}if(i===0&&found.length>0)break}if(!found.length)return null;return found.sort(function(a,b){return b-a})[0]}
-function extractName(text){var lines=text.split('\n').map(function(l){return l.trim()}).filter(function(l){return l.length>2});for(var i=0;i<Math.min(5,lines.length);i++){if(!/^[\d\s\.,\-\/\*]+$/.test(lines[i])&&lines[i].length>2)return lines[i].substring(0,40)}return lines[0]?lines[0].substring(0,40):''}
 
-/* ===== FIX: doScan — restore + refresh token ทันทีหลังกล้องปิด ===== */
+/* ===== OCR ด้วย Gemini AI ผ่าน /api/ocr ===== */
 async function doScan(e){
   var file=e.target.files[0];if(!file)return;
-  // restore ค่า token จาก localStorage ทันทีหลังกลับจากกล้อง
-  // เพราะ mobile browser อาจ suspend JS memory ระหว่างเปิดกล้อง
+
+  // restore session จาก localStorage ทันทีหลังกลับจากกล้อง
   var st=localStorage.getItem('sb_token');
   var sr=localStorage.getItem('sb_refresh');
   if(st) authToken=st;
   if(sr) refreshToken=sr;
   if(!curUser){var su=localStorage.getItem('sb_user');if(su){try{curUser=JSON.parse(su);}catch(e2){}}}
-  // refresh เพื่อให้ token พร้อมใช้งานหลัง OCR เสร็จ
   await refreshSession().catch(function(){});
-  var ss=document.getElementById('ss');var prog=document.getElementById('ocrProg');var progBar=document.getElementById('ocrBar');var progTxt=document.getElementById('ocrTxt');
-  ss.className='ss';ss.textContent='';prog.style.display='block';progBar.style.width='5%';progTxt.textContent='กำลังโหลด Tesseract OCR...';
+
+  var ss=document.getElementById('ss');
+  var prog=document.getElementById('ocrProg');
+  var progBar=document.getElementById('ocrBar');
+  var progTxt=document.getElementById('ocrTxt');
+  ss.className='ss';ss.textContent='';
+  prog.style.display='block';progBar.style.width='20%';
+  progTxt.textContent='กำลังวิเคราะห์รูปภาพ...';
+
   try{
-    if(!window.Tesseract){await new Promise(function(res,rej){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
-    progBar.style.width='20%';progTxt.textContent='กำลังวิเคราะห์รูปภาพ...';
-    var result=await Tesseract.recognize(file,'tha+eng',{logger:function(m){if(m.status==='recognizing text'){progBar.style.width=(20+Math.round(m.progress*70))+'%';progTxt.textContent='กำลังอ่านตัวอักษร... '+Math.round(m.progress*100)+'%'}}});
+    // แปลงรูปเป็น base64
+    var base64=await new Promise(function(res,rej){
+      var reader=new FileReader();
+      reader.onload=function(ev){res(ev.target.result.split(',')[1])};
+      reader.onerror=rej;
+      reader.readAsDataURL(file);
+    });
+    progBar.style.width='50%';progTxt.textContent='กำลังอ่านใบเสร็จด้วย Gemini AI...';
+
+    // เรียก Vercel API proxy (key อยู่ใน server ไม่โผล่ browser)
+    var resp=await fetch('/api/ocr',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({image:base64, mimeType:file.type||'image/jpeg'})
+    });
+    progBar.style.width='90%';
+    var parsed=await resp.json();
+
     progBar.style.width='100%';progTxt.textContent='เสร็จแล้ว!';
-    var text=result.data.text;var amount=extractAmount(text);var name=extractName(text);
-    if(name)document.getElementById('in').value=name;
-    if(amount)document.getElementById('ia').value=amount;
-    setT('expense');
     setTimeout(function(){prog.style.display='none'},500);
-    if(name||amount){ss.className='ss ok';ss.innerHTML='<i class="ti ti-check"></i> อ่านสำเร็จ'+(name?' ชื่อ: <strong>'+name+'</strong>':'')+(amount?' ฿'+amount:'')+'<br><small style="opacity:.7">ตรวจสอบและแก้ไขได้ก่อนบันทึก</small>'}
-    else{ss.className='ss er';ss.textContent='อ่านตัวเลขไม่ได้ กรุณากรอกเอง'}
-  }catch(err){prog.style.display='none';ss.className='ss er';ss.textContent='เกิดข้อผิดพลาด: '+err.message}
+
+    if(parsed&&(parsed.name||parsed.amount)){
+      if(parsed.name&&parsed.name!=='null')document.getElementById('in').value=parsed.name;
+      if(parsed.amount&&parsed.amount!==null)document.getElementById('ia').value=parsed.amount;
+      // ถ้า Gemini อ่านวันที่ได้ ใส่ให้เลย
+      if(parsed.date&&parsed.date!=='null'){
+        var dateVal=parsed.date;
+        var dateEl=document.getElementById('id');
+        if(dateEl&&dateVal.match(/^\d{4}-\d{2}-\d{2}$/))dateEl.value=dateVal;
+      }
+      setT('expense');
+      ss.className='ss ok';
+      ss.innerHTML='<i class="ti ti-check"></i> อ่านสำเร็จ'
+        +(parsed.name?' ชื่อ: <strong>'+parsed.name+'</strong>':'')
+        +(parsed.amount?' ฿'+parsed.amount:'')
+        +(parsed.date&&parsed.date!=='null'?' วันที่: '+parsed.date:'')
+        +'<br><small style="opacity:.7">ตรวจสอบและแก้ไขได้ก่อนบันทึก</small>';
+    }else{
+      ss.className='ss er';ss.textContent='อ่านไม่ได้ กรุณากรอกเอง';
+    }
+  }catch(err){
+    prog.style.display='none';
+    ss.className='ss er';ss.textContent='เกิดข้อผิดพลาด: '+err.message;
+  }
 }
 
 /* ===== PIXEL PIG ANIMATION ===== */
