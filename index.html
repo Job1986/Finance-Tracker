@@ -527,16 +527,34 @@ function setT(t){curType=t;document.getElementById('bi').className='tb'+(t==='in
 function renderCats(){if(curType==='saving'){document.getElementById('cg').innerHTML='';return}var cats=curType==='income'?CI:CE;selCat=cats[0].id;document.getElementById('cg').innerHTML=cats.map(function(c){return'<button class="catb'+(c.id===selCat?' on':'')+'" data-catid="'+c.id+'" onclick="selC(\''+c.id+'\',this)"><i class="ti '+c.icon+'" style="color:'+c.color+'"></i>'+c.label+'</button>'}).join('');document.getElementById('cfg').style.display='none'}
 function selC(id,el){selCat=id;document.querySelectorAll('.catb').forEach(function(b){b.classList.remove('on')});el.classList.add('on');document.getElementById('cfg').style.display=id==='other'?'block':'none'}
 
-/* ===== FIX: submitTx — silent refresh, no force-logout ===== */
+/* ===== FIX: submitTx — force restore token from localStorage before every save ===== */
 async function submitTx(){
-  // ลอง refresh token ก่อนบันทึกเสมอ เพื่อแก้ปัญหา session หมดหลังถ่ายรูป
-  var sessOk=await ensureSession();
-  if(!sessOk){
-    // ensureSession ล้มเหลว ลอง refresh อีกครั้ง
-    sessOk=await refreshSession();
+  // บังคับอ่าน token จาก localStorage ก่อนเสมอ
+  // เพราะหลังเปิดกล้อง/file picker บน mobile ค่าใน memory อาจโดน clear
+  var storedToken=localStorage.getItem('sb_token');
+  var storedRefresh=localStorage.getItem('sb_refresh');
+  if(storedToken) authToken=storedToken;
+  if(storedRefresh) refreshToken=storedRefresh;
+  if(!curUser){
+    var storedUser=localStorage.getItem('sb_user');
+    if(storedUser){try{curUser=JSON.parse(storedUser);}catch(e){}}
   }
-  if(!sessOk){
-    // ยังไม่ได้จริงๆ ค่อย logout
+
+  // ทดสอบ token ปัจจุบันว่ายังใช้ได้ไหม
+  var tokenOk=false;
+  if(authToken){
+    try{
+      var testRes=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+authToken}});
+      if(testRes.ok){var testData=await testRes.json();if(testData&&testData.id){curUser=testData;tokenOk=true;}}
+    }catch(e){}
+  }
+
+  // ถ้า token ใช้ไม่ได้ ลอง refresh
+  if(!tokenOk){
+    tokenOk=await refreshSession();
+  }
+
+  if(!tokenOk||!curUser){
     alert('Session หมดอายุ กรุณา login ใหม่');
     doLogout();
     return;
@@ -586,10 +604,17 @@ async function delTx(id){if(!confirm('ลบรายการนี้?'))retur
 function extractAmount(text){var patterns=[/(?:total|รวม|ยอดรวม|สุทธิ|grand\s*total)[^\d]*(\d[\d,]*\.?\d*)/gi,/(\d[\d,]*\.\d{2})/gi,/(?:฿|thb)\s*(\d[\d,]*\.?\d*)/gi];var found=[];for(var i=0;i<patterns.length;i++){var m;var re=patterns[i];re.lastIndex=0;while((m=re.exec(text))!==null){var n=parseFloat(m[1].replace(/,/g,''));if(n>0&&n<1000000)found.push(n)}if(i===0&&found.length>0)break}if(!found.length)return null;return found.sort(function(a,b){return b-a})[0]}
 function extractName(text){var lines=text.split('\n').map(function(l){return l.trim()}).filter(function(l){return l.length>2});for(var i=0;i<Math.min(5,lines.length);i++){if(!/^[\d\s\.,\-\/\*]+$/.test(lines[i])&&lines[i].length>2)return lines[i].substring(0,40)}return lines[0]?lines[0].substring(0,40):''}
 
-/* ===== FIX: doScan — refresh token ก่อน OCR เสมอ ===== */
+/* ===== FIX: doScan — restore + refresh token ทันทีหลังกล้องปิด ===== */
 async function doScan(e){
   var file=e.target.files[0];if(!file)return;
-  // refresh token ก่อนเพื่อแก้ปัญหา session หมดหลังเปิดกล้อง
+  // restore ค่า token จาก localStorage ทันทีหลังกลับจากกล้อง
+  // เพราะ mobile browser อาจ suspend JS memory ระหว่างเปิดกล้อง
+  var st=localStorage.getItem('sb_token');
+  var sr=localStorage.getItem('sb_refresh');
+  if(st) authToken=st;
+  if(sr) refreshToken=sr;
+  if(!curUser){var su=localStorage.getItem('sb_user');if(su){try{curUser=JSON.parse(su);}catch(e2){}}}
+  // refresh เพื่อให้ token พร้อมใช้งานหลัง OCR เสร็จ
   await refreshSession().catch(function(){});
   var ss=document.getElementById('ss');var prog=document.getElementById('ocrProg');var progBar=document.getElementById('ocrBar');var progTxt=document.getElementById('ocrTxt');
   ss.className='ss';ss.textContent='';prog.style.display='block';progBar.style.width='5%';progTxt.textContent='กำลังโหลด Tesseract OCR...';
