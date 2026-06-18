@@ -205,6 +205,10 @@ input[type=text],input[type=number],input[type=date],input[type=email],input[typ
 
 <!-- ===== MAIN APP ===== -->
 <div class="app" id="app">
+  <div class="user-bar" id="user-bar" style="display:none">
+    <span class="user-email" id="user-email-txt"></span>
+    <button class="logout-btn" onclick="doLogout()">ออกจากระบบ</button>
+  </div>
   <nav class="nav">
     <button class="nb on" onclick="showPg('dash',this)"><i class="ti ti-layout-dashboard"></i>ภาพรวม</button>
     <button class="nb" onclick="showPg('txs',this)"><i class="ti ti-list"></i>รายการ</button>
@@ -426,6 +430,16 @@ async function doAuth(){
 }
 
 async function showApp(){
+  // restore curUser จาก localStorage ถ้า memory ว่าง
+  if(!curUser){
+    var su=localStorage.getItem('sb_user');
+    if(su){try{curUser=JSON.parse(su);}catch(e){}}
+  }
+  if(!curUser){
+    // ไม่มี user เลย กลับไป login
+    document.getElementById('login-page').classList.remove('hide');
+    return;
+  }
   try{
     var prof=await sbFetch('profiles?id=eq.'+curUser.id+'&select=role,email','GET');
     if(prof&&prof.length){curRole=prof[0].role;}
@@ -442,6 +456,7 @@ async function showApp(){
   document.getElementById('login-page').classList.add('hide');
   document.getElementById('app').classList.add('show');
   document.getElementById('fab').style.display='flex';
+  var ub=document.getElementById('user-bar');if(ub)ub.style.display='flex';
 
   var badge=curRole==='admin'?'<span style="background:#534AB7;color:#fff;font-size:10px;padding:2px 7px;border-radius:999px;margin-left:6px">Admin</span>':'';
   document.getElementById('user-email-txt').innerHTML=(curUser.email||'')+badge;
