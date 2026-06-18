@@ -410,7 +410,18 @@ async function doAuth(){
     var d=await sbAuth(isRegMode?'signup':'token?grant_type=password',{email,password:pw});
     authToken=d.access_token;
     refreshToken=d.refresh_token;
-    curUser=d.user;
+    curUser=d.user||d.session?.user||null;
+    // ถ้า curUser ยังไม่มี ดึงจาก /auth/v1/user
+    if(!curUser&&authToken){
+      try{
+        var ur=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+authToken}});
+        var ud=await ur.json();
+        if(ud&&ud.id)curUser=ud;
+      }catch(ue){}
+    }
+    if(authToken)localStorage.setItem('sb_token',authToken);
+    if(refreshToken)localStorage.setItem('sb_refresh',refreshToken);
+    if(curUser)localStorage.setItem('sb_user',JSON.stringify(curUser));
     if(window.PasswordCredential){
       try{var cred=new PasswordCredential({id:email,password:pw,name:email});navigator.credentials.store(cred);}catch(ce){}
     }
