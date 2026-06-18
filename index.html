@@ -816,12 +816,7 @@ s.onload=function(){
 };
 document.head.appendChild(s);
 
-// persist session
-var _origDoAuth=doAuth;
-doAuth=async function(){
-  await _origDoAuth();
-  if(authToken&&curUser){localStorage.setItem('sb_token',authToken);localStorage.setItem('sb_user',JSON.stringify(curUser));if(refreshToken)localStorage.setItem('sb_refresh',refreshToken)}
-};
+// session persistence handled inside doAuth
 </script>
 </body>
 </html>
